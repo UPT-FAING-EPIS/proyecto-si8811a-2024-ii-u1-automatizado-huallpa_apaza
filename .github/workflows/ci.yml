@@ -3,7 +3,7 @@ name: Build and Push Docker image
 on:
   push:
     branches:
-      - automatizacion  # O la rama en la que deseas activar el flujo de trabajo
+      - automatizacion  # Rama en la que deseas activar el flujo de trabajo
 
 jobs:
   build:
@@ -16,18 +16,16 @@ jobs:
           repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
           ref: desarrollo  # La rama en la que se encuentra el Dockerfile
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .  # Asegúrate de que el contexto sea el directorio donde está el Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/automatizacion:latest
+      - name: Build Docker image
+        run: |
+          docker build -t palbertt/automatizacion:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push palbertt/automatizacion:latest

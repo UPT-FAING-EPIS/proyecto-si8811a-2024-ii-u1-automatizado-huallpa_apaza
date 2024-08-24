@@ -3,7 +3,7 @@ name: Build and Push Docker image
 on:
   push:
     branches:
-      - automatizacion  # Rama en la que deseas activar el flujo de trabajo
+      - infrastructure automation
 
 jobs:
   build:
@@ -13,8 +13,8 @@ jobs:
       - name: Checkout the repository with the Dockerfile
         uses: actions/checkout@v3
         with:
-          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
-          ref: desarrollo  # La rama en la que se encuentra el Dockerfile
+          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back/tree/develop
+          ref: develop  # La rama en la que se encuentra el Dockerfile
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2

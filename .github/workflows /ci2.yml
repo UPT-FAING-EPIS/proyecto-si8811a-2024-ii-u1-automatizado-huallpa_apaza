@@ -3,7 +3,7 @@ name: Build and Push Docker image
 on:
   push:
     branches:
-      - infrastructure automation
+      - infrastructure-automation
 
 jobs:
   build:
@@ -24,8 +24,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t palbertt/proyecto-si8811a:latest .
+          docker build -t palbertt/automatizacion:latest .
 
       - name: Push Docker image
         run: |
-          docker push palbertt/proyecto-si8811a:latest
+          docker push palbertt/automatizacion:latest

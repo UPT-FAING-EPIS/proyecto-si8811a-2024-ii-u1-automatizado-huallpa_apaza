@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest  # Ejecutar el flujo de trabajo en un entorno de Windows
+    runs-on: ubuntu-latest  # Ejecutar el flujo de trabajo en un entorno de Linux
 
     steps:
       - name: Checkout the repository with the Dockerfile

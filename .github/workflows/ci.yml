@@ -3,18 +3,18 @@ name: Build and Push Docker image
 on:
   push:
     branches:
-      - automatizacion
+      - automatizacion  # Rama en la que deseas activar el flujo de trabajo
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest  # Ejecutar el flujo de trabajo en un entorno de Linux
 
     steps:
       - name: Checkout the repository with the Dockerfile
         uses: actions/checkout@v3
         with:
           repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
-          ref: desarrollo
+          ref: desarrollo  # La rama en la que se encuentra el Dockerfile
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2

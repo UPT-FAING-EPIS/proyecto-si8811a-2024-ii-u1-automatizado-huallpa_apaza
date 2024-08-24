@@ -3,14 +3,18 @@ name: Build and Push Docker image
 on:
   push:
     branches:
-      - automatizacion
+      - automatizacion  # O la rama en la que deseas activar el flujo de trabajo
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-latest  # Ejecutar el flujo de trabajo en un entorno de Windows
+
     steps:
-      - name: Checkout code
+      - name: Checkout the repository with the Dockerfile
         uses: actions/checkout@v3
+        with:
+          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
+          ref: desarrollo  # La rama en la que se encuentra el Dockerfile
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -24,6 +28,6 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: .  # Asegúrate de que el contexto sea el directorio donde está el Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/automatizacion:latest

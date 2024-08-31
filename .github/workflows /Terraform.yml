@@ -3,7 +3,7 @@ name: Build, Push Docker Images, and Apply Infrastructure
 on:
   push:
     branches:
-      - automatizacion
+      - infrastructure-automation
 
 jobs:
   build-application:

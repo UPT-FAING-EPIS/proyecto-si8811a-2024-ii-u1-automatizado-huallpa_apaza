@@ -50,14 +50,10 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan \
-          -var="location=eastus" \
-          -var="resource_group_name=myResourceGroup"  # Agrega aquí todos los valores necesarios
+        run: terraform plan -var="location=eastus" -var="resource_group_name=myResourceGroup"
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve \
-          -var="location=eastus" \
-          -var="resource_group_name=myResourceGroup"  # Asegúrate de pasar todos los valores necesarios
+        run: terraform apply -auto-approve -var="location=eastus" -var="resource_group_name=myResourceGroup"
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

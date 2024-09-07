@@ -14,14 +14,21 @@ jobs:
       uses: actions/checkout@v3
       with:
         repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-apis-y-funciones-meza-y-churacutipa
-        ref: desarrollo  # La rama del repositorio principal si es necesario
+        ref: ApisFunciones  # La rama del repositorio principal si es necesario
 
     - name: Checkout external repository
       uses: actions/checkout@v3
       with:
         repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-apis-y-funciones-meza-y-churacutipa
         token: ${{ secrets.GITHUB_TOKEN }}
-        path: desarrollo  # Directorio donde se clonará el repositorio externo
+        path: external-repo  # Directorio donde se clonará el repositorio externo
+
+    - name: List files in the repository
+      run: |
+        echo "Listing files in the current directory:"
+        ls -la
+        echo "Listing files in the external-repo directory:"
+        ls -la external-repo
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -56,4 +63,5 @@ jobs:
     - name: Deploy Docker Container
       run: |
         docker run -d -p 5000:5000 your-docker-repo/my-flask-app:latest
+
 

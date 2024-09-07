@@ -3,8 +3,7 @@ name: Deploy External API-zevallos-y-anahua
 on:
   push:
     branches:
-      - main  # Cambia esto si deseas activar el workflow en otra rama de tu repositorio
-
+      - ApisFunciones  
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -21,17 +21,78 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Prepare custom requirements
+        run: |
+          echo "absl-py==2.1.0" > custom-requirements.txt
+          echo "astunparse==1.6.3" >> custom-requirements.txt
+          echo "blinker==1.8.2" >> custom-requirements.txt
+          echo "certifi==2024.7.4" >> custom-requirements.txt
+          echo "charset-normalizer==3.3.2" >> custom-requirements.txt
+          echo "click==8.1.7" >> custom-requirements.txt
+          echo "colorama==0.4.6" >> custom-requirements.txt
+          echo "Flask==3.0.3" >> custom-requirements.txt
+          echo "Flask-Testing==0.8.1" >> custom-requirements.txt
+          echo "flatbuffers==24.3.25" >> custom-requirements.txt
+          echo "gast==0.6.0" >> custom-requirements.txt
+          echo "google-pasta==0.2.0" >> custom-requirements.txt
+          echo "greenlet==3.0.3" >> custom-requirements.txt
+          echo "grpcio==1.66.0" >> custom-requirements.txt
+          echo "h5py==3.11.0" >> custom-requirements.txt
+          echo "idna==3.8" >> custom-requirements.txt
+          echo "itsdangerous==2.2.0" >> custom-requirements.txt
+          echo "Jinja2==3.1.4" >> custom-requirements.txt
+          echo "joblib==1.4.2" >> custom-requirements.txt
+          echo "keras==2.15.0" >> custom-requirements.txt  # Usa una versión compatible
+          echo "libclang==18.1.1" >> custom-requirements.txt
+          echo "Markdown==3.7" >> custom-requirements.txt
+          echo "markdown-it-py==3.0.0" >> custom-requirements.txt
+          echo "MarkupSafe==2.1.5" >> custom-requirements.txt
+          echo "mdurl==0.1.2" >> custom-requirements.txt
+          echo "ml-dtypes==0.4.0" >> custom-requirements.txt
+          echo "namex==0.0.8" >> custom-requirements.txt
+          echo "numpy==1.26.4" >> custom-requirements.txt
+          echo "opt-einsum==3.3.0" >> custom-requirements.txt
+          echo "optree==0.12.1" >> custom-requirements.txt
+          echo "packaging==24.1" >> custom-requirements.txt
+          echo "protobuf==4.25.4" >> custom-requirements.txt
+          echo "Pygments==2.18.0" >> custom-requirements.txt
+          echo "requests==2.32.3" >> custom-requirements.txt
+          echo "rich==13.7.1" >> custom-requirements.txt
+          echo "scikit-learn==1.5.1" >> custom-requirements.txt
+          echo "scipy==1.10.1" >> custom-requirements.txt  # Usa una versión compatible
+          echo "setuptools==73.0.1" >> custom-requirements.txt
+          echo "six==1.16.0" >> custom-requirements.txt
+          echo "SQLAlchemy==2.0.32" >> custom-requirements.txt
+          echo "tensorboard==2.17.1" >> custom-requirements.txt
+          echo "tensorboard-data-server==0.7.2" >> custom-requirements.txt
+          echo "tensorflow==2.17.0" >> custom-requirements.txt
+          echo "termcolor==2.4.0" >> custom-requirements.txt
+          echo "threadpoolctl==3.5.0" >> custom-requirements.txt
+          echo "typing_extensions==4.12.2" >> custom-requirements.txt
+          echo "urllib3==2.2.2" >> custom-requirements.txt
+          echo "Werkzeug==3.0.4" >> custom-requirements.txt
+          echo "wheel==0.44.0" >> custom-requirements.txt
+          echo "wrapt==1.16.0" >> custom-requirements.txt
+
       - name: Install dependencies
         working-directory: ./external-repo/api_eventos
         run: |
           python -m venv env
           . env/bin/activate
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r custom-requirements.txt
 
-      - name: Build Docker image
+      - name: Build Docker image for API
         working-directory: ./external-repo/api_eventos
-        run: docker build -t api-eventos .
+        run: |
+          docker build -t palbertt/api-zevallos-y-anahua:latest .
 
-      - name: Run Docker container
-        run: docker run -d -p 8001:8001 api-eventos
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Push Docker image for API
+        run: |
+          docker push palbertt/api-zevallos-y-anahua:latest

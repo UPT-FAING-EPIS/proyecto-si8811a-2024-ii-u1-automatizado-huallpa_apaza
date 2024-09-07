@@ -1,0 +1,36 @@
+name: Deploy External API-zevallos-y-anahua
+
+on:
+  push:
+    branches:
+      - main  # Cambia esto si deseas activar el workflow en otra rama de tu repositorio
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout your repository
+        uses: actions/checkout@v3
+
+      - name: Clone external repository
+        run: git clone --branch Desarrollo https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-api-y-funciones-zevallos-y-anahua.git external-repo
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        working-directory: ./external-repo
+        run: |
+          python -m venv env
+          . env/bin/activate
+          pip install -r requirements.txt
+
+      - name: Build Docker image
+        working-directory: ./external-repo
+        run: docker build -t api-eventos .
+
+      - name: Run Docker container
+        run: docker run -d -p 8001:8001 api-eventos

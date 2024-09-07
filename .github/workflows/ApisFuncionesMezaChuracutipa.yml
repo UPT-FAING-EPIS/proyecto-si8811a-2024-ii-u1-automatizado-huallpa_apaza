@@ -43,7 +43,7 @@ jobs:
         context: .  # Directorio del repositorio actual
         file: Dockerfile  # Usa el Dockerfile del proyecto
         push: true
-        tags: docker build -t palbertt/automatizacion:latest .
+        tags: palbertt/automatizacion:latest
 
     - name: Deploy Docker Container
       run: |

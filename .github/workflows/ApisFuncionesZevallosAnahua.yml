@@ -42,7 +42,7 @@ jobs:
           echo "itsdangerous==2.2.0" >> external-repo/api_eventos/custom-requirements.txt
           echo "Jinja2==3.1.4" >> external-repo/api_eventos/custom-requirements.txt
           echo "joblib==1.4.2" >> external-repo/api_eventos/custom-requirements.txt
-          echo "keras==2.15.0" >> external-repo/api_eventos/custom-requirements.txt  # Usa una versión compatible
+          echo "keras>=3.2.0" >> external-repo/api_eventos/custom-requirements.txt  # Usa una versión compatible
           echo "libclang==18.1.1" >> external-repo/api_eventos/custom-requirements.txt
           echo "Markdown==3.7" >> external-repo/api_eventos/custom-requirements.txt
           echo "markdown-it-py==3.0.0" >> external-repo/api_eventos/custom-requirements.txt
@@ -59,7 +59,7 @@ jobs:
           echo "requests==2.32.3" >> external-repo/api_eventos/custom-requirements.txt
           echo "rich==13.7.1" >> external-repo/api_eventos/custom-requirements.txt
           echo "scikit-learn==1.5.1" >> external-repo/api_eventos/custom-requirements.txt
-          echo "scipy==1.10.1" >> external-repo/api_eventos/custom-requirements.txt  # Usa una versión compatible
+          echo "scipy==1.10.1" >> external-repo/api_eventos/custom-requirements.txt
           echo "setuptools==73.0.1" >> external-repo/api_eventos/custom-requirements.txt
           echo "six==1.16.0" >> external-repo/api_eventos/custom-requirements.txt
           echo "SQLAlchemy==2.0.32" >> external-repo/api_eventos/custom-requirements.txt

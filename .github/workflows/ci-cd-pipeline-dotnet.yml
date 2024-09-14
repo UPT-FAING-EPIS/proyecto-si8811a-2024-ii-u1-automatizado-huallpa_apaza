@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout current repository
       uses: actions/checkout@v3
+      with:
+        ref: desarrollo  # Asegura que se realice el checkout de la rama 'desarrollo'
 
     # Configurar .NET Core SDK
     - name: Setup .NET Core
@@ -46,8 +48,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: .  # Directorio actual donde se encuentra el Dockerfile
-        file: Dockerfile
+        context: .  # Usa el directorio actual como contexto después del checkout
+        file: Dockerfile  # Nombre del Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/proyecto-si8811a-2024-ii-u1-desarrollo-api-back:latest
 

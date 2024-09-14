@@ -21,3 +21,7 @@ jobs:
         ref: desarrollo
         token: ${{ secrets.GITHUB_TOKEN }} 
         path: dockerfile-repo  # Descarga el otro repositorio en este subdirectorio
+        
+    # Listar archivos para debugging
+    - name: List files for debugging
+      run: ls -R dockerfile-repo

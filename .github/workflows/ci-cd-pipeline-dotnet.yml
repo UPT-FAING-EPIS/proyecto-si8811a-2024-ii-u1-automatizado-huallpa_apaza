@@ -31,3 +31,7 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0'
+        
+    # Restaurar las dependencias de .NET
+    - name: Restore .NET dependencies
+      run: dotnet restore dockerfile-repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj

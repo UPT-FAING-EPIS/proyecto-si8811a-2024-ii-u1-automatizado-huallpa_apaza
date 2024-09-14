@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11'  # Actualiza a la versión de Python que estás usando
 
       - name: Install dependencies
         working-directory: ./api-repo/api_lugares  # Actualiza el directorio de trabajo
@@ -37,4 +37,5 @@ jobs:
         # Usa el Dockerfile del directorio docker-repo y el contexto de ../api-repo/api_lugares
 
       - name: Run Docker container
-        run: docker run -d -p 8001:8001 api-eventos
+        run: docker run -d -p 8000:8000 api-eventos
+        # Usa el puerto 8000 para coincidir con el puerto expuesto en el Dockerfile

@@ -4,3 +4,11 @@ on:
   push:
     branches:
       - ApiFuncion
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Hacer checkout del repositorio actual
+    - name: Checkout current repository
+      uses: actions/checkout@v3

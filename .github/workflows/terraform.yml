@@ -3,7 +3,7 @@ name: CI/CD Pipeline for .NET API
 on:
   push:
     branches:
-      - main  # Cambia esto según la rama que uses
+      - ApiFuncion
 
 jobs:
   build:

@@ -5,10 +5,10 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copia los archivos del repositorio API al contenedor
-COPY api_lugares /app/api_lugares
+COPY api_lugares /app
 
 # Cambia al directorio que contiene el Dockerfile
-WORKDIR /app/api_lugares
+WORKDIR /app
 
 # Instala las dependencias
 RUN pip install --no-cache-dir -r requirements.txt

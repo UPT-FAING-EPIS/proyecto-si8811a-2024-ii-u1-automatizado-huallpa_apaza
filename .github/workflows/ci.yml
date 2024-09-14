@@ -3,7 +3,7 @@ name: Build and Push Docker Images
 on:
   push:
     branches:
-      - automatizacion
+      - automatizacion  # Ajusta esto según la rama desde la cual quieres activar el pipeline
 
 jobs:
   build-images:
@@ -28,7 +28,7 @@ jobs:
       - name: Build Docker image for application
         run: |
           docker build -t palbertt/automatizacion:latest .
-        
+
       - name: Push Docker image for application
         run: |
           docker push palbertt/automatizacion:latest
@@ -39,6 +39,14 @@ jobs:
         with:
           repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde
           ref: feature/feature_pruebas  # La rama para construir la segunda imagen
+
+      # Verifica si Dockerfile existe en el segundo repositorio
+      - name: Verify Dockerfile presence
+        run: |
+          if [ ! -f Dockerfile ]; then
+            echo "Dockerfile not found in the repository!"
+            exit 1
+          fi
 
       # Build y push de la imagen 'Pruebas-Selenium' para el segundo repositorio
       - name: Build Docker image for pruebas branch

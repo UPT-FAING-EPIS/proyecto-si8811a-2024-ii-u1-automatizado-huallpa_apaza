@@ -25,3 +25,9 @@ jobs:
     # Listar archivos para debugging
     - name: List files for debugging
       run: ls -R dockerfile-repo
+
+   # Configurar .NET Core SDK
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0'

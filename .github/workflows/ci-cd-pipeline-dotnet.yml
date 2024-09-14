@@ -14,14 +14,18 @@ jobs:
     - name: Checkout current repository
       uses: actions/checkout@v3
 
-    # Hacer checkout del Dockerfile desde el otro repositorio
-    - name: Checkout Dockerfile from another repository
+    # Hacer checkout del Dockerfile y el archivo .csproj desde el otro repositorio
+    - name: Checkout Dockerfile and project file from another repository
       uses: actions/checkout@v3
       with:
         repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
         ref: desarrollo
         token: ${{ secrets.GITHUB_TOKEN }}
-        path: dockerfile-repo  # Especifica un subdirectorio para descargar el otro repositorio
+        path: dockerfile-repo  # Descarga el otro repositorio en este subdirectorio
+
+    # Listar archivos para debugging
+    - name: List files for debugging
+      run: ls -R dockerfile-repo  # Lista los archivos para verificar la estructura del directorio
 
     # Configurar .NET Core SDK
     - name: Setup .NET Core
@@ -31,15 +35,15 @@ jobs:
 
     # Restaurar las dependencias de .NET
     - name: Restore .NET dependencies
-      run: dotnet restore proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj
+      run: dotnet restore dockerfile-repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj
 
     # Construir la aplicación .NET
     - name: Build .NET application
-      run: dotnet build proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-restore
+      run: dotnet build dockerfile-repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-restore
 
     # Ejecutar las pruebas de .NET
     - name: Test .NET application
-      run: dotnet test proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-build --verbosity normal
+      run: dotnet test dockerfile-repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-build --verbosity normal
 
     # Configurar Docker Buildx para la construcción de imágenes Docker
     - name: Set up Docker Buildx

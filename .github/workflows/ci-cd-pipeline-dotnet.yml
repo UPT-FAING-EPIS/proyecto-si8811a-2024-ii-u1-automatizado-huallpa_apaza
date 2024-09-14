@@ -20,7 +20,7 @@ jobs:
       with:
         repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
         ref: desarrollo
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }} 
         path: dockerfile-repo  # Descarga el otro repositorio en este subdirectorio
 
     # Listar archivos para debugging

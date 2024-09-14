@@ -1,1 +1,6 @@
+ame: CI/CD Pipeline for .NET API
 
+on:
+  push:
+    branches:
+      - ApiFuncion

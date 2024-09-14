@@ -10,16 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Hacer checkout del repositorio actual
     - name: Checkout current repository
       uses: actions/checkout@v3
 
-    # Hacer checkout del Dockerfile desde otro repositorio
+    # Hacer checkout del Dockerfile desde el otro repositorio
     - name: Checkout Dockerfile from another repository
       uses: actions/checkout@v3
       with:
-        repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza  # Repositorio donde está la rama 'desarrollo'
-        ref: ApiFuncion  # Especifica la rama
-        token: ${{ secrets.GITHUB_TOKEN }}  # Token de acceso para el repositorio
+        repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
+        ref: desarrollo
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: dockerfile-repo  # Especifica un subdirectorio para descargar el otro repositorio
 
     # Configurar .NET Core SDK
     - name: Setup .NET Core
@@ -29,15 +31,15 @@ jobs:
 
     # Restaurar las dependencias de .NET
     - name: Restore .NET dependencies
-      run: dotnet restore proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj
+      run: dotnet restore proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj
 
     # Construir la aplicación .NET
     - name: Build .NET application
-      run: dotnet build proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-restore
+      run: dotnet build proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-restore
 
     # Ejecutar las pruebas de .NET
     - name: Test .NET application
-      run: dotnet test proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-build --verbosity normal
+      run: dotnet test proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-build --verbosity normal
 
     # Configurar Docker Buildx para la construcción de imágenes Docker
     - name: Set up Docker Buildx
@@ -54,8 +56,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: .  # Usa el directorio actual como contexto después del checkout
-        file: proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza/Dockerfile  # Especifica la ruta al Dockerfile
+        context: dockerfile-repo  # Usa el directorio donde se descargó el Dockerfile
+        file: dockerfile-repo/Dockerfile  # Ruta al Dockerfile descargado
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/proyecto-si8811a-2024-ii-u1-desarrollo-api-back:latest
 

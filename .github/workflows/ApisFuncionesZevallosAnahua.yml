@@ -1,4 +1,4 @@
-name: Deploy External API-zevallos-y-anahua
+name: Deploy External API
 
 on:
   push:
@@ -7,34 +7,29 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Cambiado a Ubuntu para compatibilidad con Docker
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout your repository
         uses: actions/checkout@v3
-        with:
-          path: docker-repo  # Directorio donde se descargará tu repositorio con el Dockerfile
 
       - name: Clone external repository (Desarrollo branch)
         run: git clone --single-branch --branch Desarrollo https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-api-y-funciones-zevallos-y-anahua.git api-repo
-        # Clona el repositorio de la API en un directorio llamado api-repo
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
-        working-directory: ./api-repo/api_lugares  # Actualiza el directorio de trabajo
+      - name: Install dependencies for API
+        working-directory: ./api-repo/api_lugares
         run: |
           python -m venv env
-          source env/bin/activate  # Cambiado para Linux; usa source en lugar de Activate.ps1
+          source env/bin/activate
           pip install -r requirements.txt
 
       - name: Build Docker image
-        working-directory: ./docker-repo  # Navega al directorio donde está el Dockerfile
-        run: docker build -t api-eventos -f Dockerfile ../api-repo/api_lugares
-        # Usa el Dockerfile del directorio docker-repo y el contexto de ../api-repo/api_lugares
+        run: docker build -t api-eventos -f Dockerfile ./api-repo/api_lugares
 
       - name: Run Docker container
         run: docker run -d -p 8001:8001 api-eventos

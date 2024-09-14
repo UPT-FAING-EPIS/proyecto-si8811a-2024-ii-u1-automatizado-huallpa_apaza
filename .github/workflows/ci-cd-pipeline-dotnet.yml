@@ -12,3 +12,12 @@ jobs:
     # Hacer checkout del repositorio actual
     - name: Checkout current repository
       uses: actions/checkout@v3
+      
+   # Hacer checkout del Dockerfile y el archivo .csproj desde el otro repositorio
+    - name: Checkout Dockerfile and project file from another repository
+      uses: actions/checkout@v3
+      with:
+        repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
+        ref: desarrollo
+        token: ${{ secrets.GITHUB_TOKEN }} 
+        path: dockerfile-repo  # Descarga el otro repositorio en este subdirectorio

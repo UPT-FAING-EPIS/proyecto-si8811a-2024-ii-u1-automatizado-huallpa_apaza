@@ -43,3 +43,7 @@ jobs:
     # Ejecutar las pruebas de .NET
     - name: Test .NET application
       run: dotnet test dockerfile-repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-build --verbosity normal
+
+    # Configurar Docker Buildx para la construcción de imágenes Docker
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2

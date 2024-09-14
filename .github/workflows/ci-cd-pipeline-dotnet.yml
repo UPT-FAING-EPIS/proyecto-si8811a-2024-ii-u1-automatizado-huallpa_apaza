@@ -62,3 +62,7 @@ jobs:
         file: dockerfile-repo/Dockerfile  # Ruta al Dockerfile descargado
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/proyecto-si8811a-2024-ii-u1-desarrollo-api-back:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build

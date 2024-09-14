@@ -4,7 +4,7 @@ FROM python:3.9-slim
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /app
 
-# Copia el contenido del directorio api_lugares al contenedor
+# Copia el contenido del directorio api_lugares del repositorio externo al contenedor
 COPY api_lugares/ /app/api_lugares
 
 # Establece el directorio de trabajo en el contenedor

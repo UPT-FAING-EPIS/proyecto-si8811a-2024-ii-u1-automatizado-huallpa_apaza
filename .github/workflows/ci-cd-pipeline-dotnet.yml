@@ -54,3 +54,11 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: dockerfile-repo  # Usa el directorio donde se descargó el Dockerfile
+        file: dockerfile-repo/Dockerfile  # Ruta al Dockerfile descargado
+        push: true
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/proyecto-si8811a-2024-ii-u1-desarrollo-api-back:latest

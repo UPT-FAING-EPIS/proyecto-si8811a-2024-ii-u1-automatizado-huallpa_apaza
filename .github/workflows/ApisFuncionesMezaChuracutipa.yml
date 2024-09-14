@@ -50,8 +50,8 @@ jobs:
         context: .  # Directorio del repositorio actual
         file: Dockerfile  # Usa el Dockerfile del proyecto
         push: true
-        tags: palbertt/automatizacion:latest
+        tags: palbertt/automatizacion:api1-v1.0.0
 
     - name: Deploy Docker Container
       run: |
-        docker run -d -p 5000:5000 your-docker-repo/flask-app:latest
+        docker run -d -p 5000:5000 palbertt/automatizacion:api1-v1.0.0

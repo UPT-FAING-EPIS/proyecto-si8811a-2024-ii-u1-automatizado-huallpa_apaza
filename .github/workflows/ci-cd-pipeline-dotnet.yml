@@ -3,7 +3,7 @@ name: CI/CD Pipeline for .NET API
 on:
   push:
     branches:
-      - ApiFuncion
+      - ApiFuncion  # Cambia esto según la rama que uses para ejecutar el workflow
 
 jobs:
   build:
@@ -13,6 +13,7 @@ jobs:
     - name: Checkout current repository
       uses: actions/checkout@v3
       with:
+        repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza  # Reemplaza con el repositorio correcto
         ref: desarrollo  # Asegura que se realice el checkout de la rama 'desarrollo'
 
     # Configurar .NET Core SDK

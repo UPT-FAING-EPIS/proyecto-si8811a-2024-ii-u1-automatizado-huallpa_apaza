@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest  # Cambiado a Ubuntu para compatibilidad con Docker
 
     steps:
       - name: Checkout your repository
@@ -16,21 +16,10 @@ jobs:
       - name: Clone external repository (Desarrollo branch)
         run: git clone --single-branch --branch Desarrollo https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-api-y-funciones-zevallos-y-anahua.git external-repo
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-
-      - name: Install dependencies
-        working-directory: ./external-repo/api_lugares
-        run: |
-          python -m venv env
-          .\env\Scripts\Activate.ps1
-          pip install -r requirements.txt
-
       - name: Build Docker image
         working-directory: ./external-repo/api_lugares
         run: docker build -t api-eventos .
 
       - name: Run Docker container
-        run: docker run -d -p 8001:8001 api-eventos
+        run: docker run -d -p 8001:8000 api-eventos
+        # Map port 8000 inside the container to port 8001 on the host for clarity

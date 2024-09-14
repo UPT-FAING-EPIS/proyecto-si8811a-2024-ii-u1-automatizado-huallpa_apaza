@@ -39,3 +39,7 @@ jobs:
     # Restaurar las dependencias de .NET
     - name: Restore .NET dependencies
       run: dotnet restore dockerfile-repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj
+
+    # Ejecutar las pruebas de .NET
+    - name: Test .NET application
+      run: dotnet test dockerfile-repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-build --verbosity normal

@@ -32,6 +32,10 @@ jobs:
       with:
         dotnet-version: '8.0'
         
+   # Construir la aplicación .NET
+    - name: Build .NET application
+      run: dotnet build dockerfile-repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj --configuration Release --no-restore
+        
     # Restaurar las dependencias de .NET
     - name: Restore .NET dependencies
       run: dotnet restore dockerfile-repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.csproj

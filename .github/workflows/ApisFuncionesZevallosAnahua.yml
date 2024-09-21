@@ -16,6 +16,10 @@ jobs:
       - name: Clone external repository (Desarrollo branch)
         run: git clone --single-branch --branch Desarrollo https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-api-y-funciones-zevallos-y-anahua.git external-repo
 
+      # Paso para verificar la estructura del repositorio clonado
+      - name: List repository files
+        run: ls -R ./external-repo
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -26,10 +30,15 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./external-repo/api_lugares  # Asegúrate de que este es el directorio correcto
-          file: Dockerfile  # Asegúrate de que Dockerfile está en este directorio
+          file: ./external-repo/api_lugares/Dockerfile  # Ruta completa al Dockerfile
           push: true
           tags: palbertt/automatizacion:api2-v1.0.0
+
+      # Paso opcional para verificar permisos de archivos si es necesario
+      - name: Set file permissions (if needed)
+        run: chmod -R 755 ./external-repo/api_lugares
 
       - name: Deploy Docker Container
         run: |
           docker run -d -p 5000:5000 palbertt/automatizacion:api5-v1.0.0
+

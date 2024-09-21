@@ -3,7 +3,7 @@ name: Generate README.md
 on:
   push:
     branches:
-      - DesarrolloApiBack
+      - develop
 
 jobs:
   generate-readme:
@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
+        with:
+          ref: develop  # Asegurarte de que sea la rama 'develop'
 
       - name: Install Terraform
         run: |
@@ -19,7 +21,7 @@ jobs:
           unzip terraform_1.0.0_linux_amd64.zip
           sudo mv terraform /usr/local/bin/
 
-      - name: Generate README.md
+      - name: Parse Terraform files and generate Mermaid diagram
         run: |
           echo "# Proyecto de API" > README.md
           echo "" >> README.md
@@ -29,12 +31,15 @@ jobs:
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
           
-          # Generar el diagrama a partir de archivos TF
+          # Buscar todos los archivos .tf y generar el diagrama con sus relaciones
           for file in $(find . -name "*.tf"); do
-            # Aquí deberías llamar a una herramienta que analice los archivos TF y genere Mermaid
-            # Por ejemplo, un script que lea los archivos TF y produzca las relaciones
-            # Este es un ejemplo genérico; necesitarías personalizarlo
-            echo "    $(basename $file) --> AWS" >> README.md
+            echo "Analizando $file"
+            # Aquí debes agregar un análisis para interpretar los recursos de cada archivo TF
+            # Ejemplo básico (modifícalo según tu estructura):
+            resource=$(grep 'resource "' $file | awk '{print $2}')
+            if [ "$resource" != "" ]; then
+              echo "    $resource --> AWS" >> README.md
+            fi
           done
           
           echo '```' >> README.md
@@ -52,5 +57,4 @@ jobs:
           git config --local user.email "jh2021071085@virtual.upt.pe"
           git add README.md
           git commit -m "Generar README.md automáticamente" || echo "No hay cambios para commit"
-          git push origin DesarrolloApiBack
-
+          git push origin develop

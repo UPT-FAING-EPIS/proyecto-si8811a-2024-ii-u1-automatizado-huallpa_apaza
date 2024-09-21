@@ -1,3 +1,4 @@
+```mermaid
 graph TD;
     A[AWS Provider]:::provider -->|Region| B[var.aws_region]
 

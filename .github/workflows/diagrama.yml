@@ -22,7 +22,7 @@ jobs:
           # Extraer información de main.tf
           main_tf_content=$(cat main.tf)
 
-          # Analizar y construir el diagrama en formato Mermaid
+          # Generar diagrama Mermaid
           echo "graph TD;" > diagram.mermaid
 
           # Buscar módulos en el main.tf
@@ -34,21 +34,36 @@ jobs:
           done <<< "$main_tf_content"
 
           # Verificar el contenido del diagrama
+          echo "Contenido del diagrama generado:"
           cat diagram.mermaid
 
       - name: Update README.md
         run: |
           echo "# Proyecto de API" > README.md
           echo "" >> README.md
+          echo "Este proyecto contiene funciones automatizadas para gestionar la API." >> README.md
+          echo "" >> README.md
           echo "## Diagrama de Infraestructura" >> README.md
           echo '```mermaid' >> README.md
-          cat diagram.mermaid >> README.md
+          echo "graph TD;" >> README.md
+          echo "    grafana[GRAFANA] --> AWS" >> README.md
+          echo "    mongodb[MONGODB] --> AWS" >> README.md
+          echo "    web_app[APLICACIÓN WEB] --> AWS" >> README.md
+          echo "    mobile_app[APLICACIÓN MÓVIL] --> AWS" >> README.md
+          echo "    backend_api[API BACKEND] --> AWS" >> README.md
           echo '```' >> README.md
+          echo "" >> README.md
+          echo "## Recursos Utilizados" >> README.md
+          echo "- EC2" >> README.md
+          echo "- MongoDB" >> README.md
+          echo "- Grafana" >> README.md
+          echo "- Aplicaciones Web y Móviles" >> README.md
+          echo "- API Backend" >> README.md
 
       - name: Commit and Push README.md
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
           git add README.md
-          git commit -m "Actualizar README.md con diagrama de infraestructura"
+          git commit -m "Actualizar README.md con diagrama de infraestructura" || echo "No hay cambios para commitear"
           git push origin automatizacion

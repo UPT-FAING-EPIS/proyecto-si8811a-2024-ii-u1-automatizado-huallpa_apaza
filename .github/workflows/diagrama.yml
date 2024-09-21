@@ -13,6 +13,12 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
 
+      - name: Install Terraform
+        run: |
+          curl -LO https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
+          unzip terraform_1.0.0_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+
       - name: Generate README.md
         run: |
           echo "# Proyecto de API" > README.md
@@ -22,11 +28,15 @@ jobs:
           echo "## Diagrama de Infraestructura" >> README.md
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
-          echo "    grafana[GRAFANA] --> AWS" >> README.md
-          echo "    mongodb[MONGODB] --> AWS" >> README.md
-          echo "    web_app[APLICACIÓN WEB] --> AWS" >> README.md
-          echo "    mobile_app[APLICACIÓN MÓVIL] --> AWS" >> README.md
-          echo "    backend_api[API BACKEND] --> AWS" >> README.md
+          
+          # Generar el diagrama a partir de archivos TF
+          for file in $(find . -name "*.tf"); do
+            # Aquí deberías llamar a una herramienta que analice los archivos TF y genere Mermaid
+            # Por ejemplo, un script que lea los archivos TF y produzca las relaciones
+            # Este es un ejemplo genérico; necesitarías personalizarlo
+            echo "    $(basename $file) --> AWS" >> README.md
+          done
+          
           echo '```' >> README.md
           echo "" >> README.md
           echo "## Recursos Utilizados" >> README.md
@@ -43,3 +53,4 @@ jobs:
           git add README.md
           git commit -m "Generar README.md automáticamente" || echo "No hay cambios para commit"
           git push origin DesarrolloApiBack
+

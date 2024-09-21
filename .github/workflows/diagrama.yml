@@ -55,8 +55,8 @@ jobs:
 
       - name: Commit and Push README.md
         run: |
-          git config --local user.name "GitHub Action"
-          git config --local user.email "action@github.com"
+          git config --local user.name "jesus huallpa"
+          git config --local user.email "jh2021071085@virtual.upt.pe"
           git add README.md
           git commit -m "Actualizar README.md"
           git push

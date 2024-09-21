@@ -1,0 +1,57 @@
+name: Selenium Tests and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - feature/feature_pruebas
+  pull_request:
+    branches:
+      - feature/feature_pruebas
+
+jobs:
+  selenium-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Install Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Set up Chrome WebDriver
+        run: |
+          sudo apt-get install -y unzip xvfb
+          wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
+          unzip /tmp/chromedriver.zip -d /usr/local/bin/
+
+      # Instala las dependencias del proyecto (ajusta esto según tu stack)
+      - name: Install dependencies
+        run: |
+          ./mvnw install
+
+      # Ejecuta las pruebas con Selenium
+      - name: Run Selenium tests
+        run: |
+          xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' ./mvnw test
+
+      # Generar el reporte de pruebas (aquí se asume que usas JUnit o similar)
+      - name: Archive test reports
+        if: always()
+        run: mkdir -p target/test-reports
+
+      # Desplegar en GitHub Pages
+      - name: Deploy to GitHub Pages
+        if: success()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/surefire-reports

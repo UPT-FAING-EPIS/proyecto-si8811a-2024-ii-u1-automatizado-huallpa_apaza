@@ -39,7 +39,7 @@ jobs:
       - name: Commit and Push README.md
         run: |
           git config --local user.name "jesus huallpa"
-          git config --local user.email "jh2021071085@virtual.upt.pe
+          git config --local user.email "jh2021071085@virtual.upt.pe"
           git add README.md
           git commit -m "Generar README.md automáticamente" || echo "No hay cambios para commit"
           git push origin DesarrolloApiBack

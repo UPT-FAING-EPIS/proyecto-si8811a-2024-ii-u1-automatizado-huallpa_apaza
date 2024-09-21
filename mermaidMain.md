@@ -1,8 +1,9 @@
+mermaid
 graph TD;
-    A[<img src="aws_icon.png" width="30"/> AWS Provider]:::provider -->|Region| B[var.aws_region]
+    A[AWS Provider]:::provider -->|Region| B[var.aws_region]
 
     subgraph Grafana Module
-        C1[<img src="grafana_icon.png" width="30"/> Grafana]:::module
+        C1[Grafana]:::module
         C1 -->|AMI ID| D[var.grafana_ami_id]
         C1 -->|Instance Type| E[var.grafana_instance_type]
         C1 -->|Key Name| F[var.grafana_key_name]
@@ -10,7 +11,7 @@ graph TD;
     end
 
     subgraph MongoDB Module
-        H1[<img src="mongodb_icon.png" width="30"/> MongoDB]:::module
+        H1[MongoDB]:::module
         H1 -->|Project Name| I[var.mongodb_project_name]
         H1 -->|Atlas Org ID| J[var.mongodb_atlas_org_id]
         H1 -->|Cluster Name| K[var.mongodb_cluster_name]
@@ -21,19 +22,19 @@ graph TD;
     end
 
     subgraph Web App Module
-        P1[<img src="react_icon.png" width="30"/> Web App]:::module
+        P1[Web App]:::module
         P1 -->|App Bucket Name| Q[var.react_app_bucket_name]
         P1 -->|Environment| R[var.environment]
     end
 
     subgraph Mobile App Module
-        S1[<img src="flutter_icon.png" width="30"/> Mobile App]:::module
+        S1[Mobile App]:::module
         S1 -->|App Bucket Name| T[var.flutter_app_bucket_name]
         S1 -->|Environment| U[var.environment]
     end
 
     subgraph Backend API Module
-        V1[<img src="lambda_icon.png" width="30"/> Backend API]:::module
+        V1[Backend API]:::module
         V1 -->|API Gateway Name| W[var.api_gateway_name]
         V1 -->|Lambda Function Name| X[var.lambda_function_name]
         V1 -->|Environment| Y[var.environment]

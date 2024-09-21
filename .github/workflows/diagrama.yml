@@ -1,4 +1,4 @@
-name: Generate Infrastructure Diagram
+name: Generate README.md
 
 on:
   push:
@@ -6,38 +6,14 @@ on:
       - automatizacion
 
 jobs:
-  generate-diagram:
+  generate-readme:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
-        with:
-          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
-          ref: develop
 
-      - name: Generate Mermaid Diagram
-        id: generate_mermaid
-        run: |
-          # Extraer información de main.tf
-          main_tf_content=$(cat main.tf)
-
-          # Generar diagrama Mermaid
-          echo "graph TD;" > diagram.mermaid
-
-          # Buscar módulos en el main.tf
-          while IFS= read -r line; do
-            if [[ $line == module* ]]; then
-              module_name=$(echo $line | awk '{print $2}')
-              echo "    $module_name[$module_name] --> AWS" >> diagram.mermaid
-            fi
-          done <<< "$main_tf_content"
-
-          # Verificar el contenido del diagrama
-          echo "Contenido del diagrama generado:"
-          cat diagram.mermaid
-
-      - name: Update README.md
+      - name: Generate README.md
         run: |
           echo "# Proyecto de API" > README.md
           echo "" >> README.md
@@ -63,7 +39,7 @@ jobs:
       - name: Commit and Push README.md
         run: |
           git config --local user.name "jesus huallpa"
-          git config --local user.email "jh2021071085@virtual.upt.pe"
+          git config --local user.email "jh2021071085@virtual.upt.pe
           git add README.md
-          git commit -m "Actualizar README.md con diagrama de infraestructura" || echo "No hay cambios para commitear"
+          git commit -m "Generar README.md automáticamente" || echo "No hay cambios para commit"
           git push origin automatizacion

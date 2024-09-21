@@ -39,10 +39,10 @@ jobs:
           # Analizar los archivos .tf en el repositorio clonado
           for file in $(find terraform_repo -name "*.tf"); do
             echo "Analizando $file"
-            resource=$(grep 'resource "' $file | awk '{print $2}')
-            if [ "$resource" != "" ]; then
+            # Modificar el grep y awk para extraer los nombres sin comillas
+            grep 'resource "' $file | awk -F '"' '{print $2}' | while read resource; do
               echo "    $resource --> AWS" >> README.md
-            fi
+            done
           done
           
           echo '```' >> README.md

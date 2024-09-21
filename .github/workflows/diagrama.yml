@@ -3,17 +3,22 @@ name: Generate README.md
 on:
   push:
     branches:
-      - develop
+      - DesarrolloApiBack
 
 jobs:
   generate-readme:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repository
+      - name: Checkout the main repository
+        uses: actions/checkout@v3
+
+      - name: Checkout the Terraform repository
         uses: actions/checkout@v3
         with:
-          ref: develop  # Asegurarte de que sea la rama 'develop'
+          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
+          path: terraform_repo  # Directorio donde se clonará el repo
+          ref: develop  # Rama donde están los archivos TF
 
       - name: Install Terraform
         run: |
@@ -21,7 +26,7 @@ jobs:
           unzip terraform_1.0.0_linux_amd64.zip
           sudo mv terraform /usr/local/bin/
 
-      - name: Parse Terraform files and generate Mermaid diagram
+      - name: Generate README.md
         run: |
           echo "# Proyecto de API" > README.md
           echo "" >> README.md
@@ -31,11 +36,9 @@ jobs:
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
           
-          # Buscar todos los archivos .tf y generar el diagrama con sus relaciones
-          for file in $(find . -name "*.tf"); do
+          # Analizar los archivos .tf en el repositorio clonado
+          for file in $(find terraform_repo -name "*.tf"); do
             echo "Analizando $file"
-            # Aquí debes agregar un análisis para interpretar los recursos de cada archivo TF
-            # Ejemplo básico (modifícalo según tu estructura):
             resource=$(grep 'resource "' $file | awk '{print $2}')
             if [ "$resource" != "" ]; then
               echo "    $resource --> AWS" >> README.md
@@ -57,4 +60,4 @@ jobs:
           git config --local user.email "jh2021071085@virtual.upt.pe"
           git add README.md
           git commit -m "Generar README.md automáticamente" || echo "No hay cambios para commit"
-          git push origin develop
+          git push origin DesarrolloApiBack

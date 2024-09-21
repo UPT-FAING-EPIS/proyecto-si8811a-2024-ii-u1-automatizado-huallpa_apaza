@@ -1,20 +1,20 @@
 name: Selenium Tests and Deploy to GitHub Pages
 
-# Ejecutar el workflow en tu repositorio cuando haya un push o pull request a la rama main
+# Ejecutar el workflow solo cuando haya un push o pull request a la rama main en TU repositorio
 on:
   push:
     branches:
-      - main  # Aquí va tu rama actual
+      - main  # Cambia "main" por la rama de tu repositorio si es diferente
   pull_request:
     branches:
-      - main  # Aquí va tu rama actual
+      - main  # Cambia "main" por la rama de tu repositorio si es diferente
 
 jobs:
   selenium-tests:
     runs-on: ubuntu-latest
 
     steps:
-      # Paso 1: Checkout de tu propio repositorio y rama actual
+      # Paso 1: Checkout de tu repositorio y rama actual
       - name: Checkout your repository
         uses: actions/checkout@v3
 
@@ -24,6 +24,7 @@ jobs:
         with:
           repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde
           ref: feature/feature_pruebas
+          path: external_repo
 
       # Paso 3: Configurar Java para las pruebas de Selenium
       - name: Set up Java
@@ -45,20 +46,24 @@ jobs:
           wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
           unzip /tmp/chromedriver.zip -d /usr/local/bin/
 
-      # Paso 6: Instalar las dependencias del proyecto (ajusta según tu stack, puede ser Maven o Node.js)
-      - name: Install dependencies
+      # Paso 6: Navegar a la carpeta Prueba1-Selenium e instalar las dependencias del proyecto (si usa Python)
+      - name: Install dependencies (Python)
         run: |
-          ./mvnw install
+          cd external_repo/Prueba1-Selenium
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
 
-      # Paso 7: Ejecutar las pruebas de Selenium usando Chrome en modo headless
+      # Paso 7: Ejecutar las pruebas de Selenium (confest.py, test_eventos.py, test_log.py, test_login.py)
       - name: Run Selenium tests
         run: |
-          xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' ./mvnw test
+          cd external_repo/Prueba1-Selenium
+          xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' pytest confest.py test_eventos.py test_log.py test_login.py
 
       # Paso 8: Guardar los reportes de las pruebas
       - name: Archive test reports
         if: always()
-        run: mkdir -p target/test-reports
+        run: mkdir -p external_repo/Prueba1-Selenium/test-reports
 
       # Paso 9: Desplegar los reportes de las pruebas en GitHub Pages
       - name: Deploy to GitHub Pages
@@ -66,4 +71,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/surefire-reports
+          publish_dir: external_repo/Prueba1-Selenium/test-reports

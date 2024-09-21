@@ -41,7 +41,7 @@ jobs:
           ls terraform_repo
 
           # Solo analizar el archivo main.tf en la ruta correcta
-          file="main.tf"
+          file="terraform_repo/main.tf"
           echo "Analizando $file"
           
           # Extraer nombres de recursos del archivo main.tf

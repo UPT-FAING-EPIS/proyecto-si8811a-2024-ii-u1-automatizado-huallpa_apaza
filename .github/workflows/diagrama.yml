@@ -53,10 +53,17 @@ jobs:
         run: |
           docker push palbertt/automatizacion:diagramaTF
 
-      - name: Commit and Push README.md
+      - name: Configure Git
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
+
+      - name: Check for changes in README.md
+        run: |
+          git diff --exit-code README.md || echo "README.md has changes"
+
+      - name: Commit and Push README.md
+        run: |
           git add README.md
-          git commit -m "Actualizar README.md"
+          git commit -m "Actualizar README.md" || echo "No hay cambios para commit"
           git push

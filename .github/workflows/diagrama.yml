@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: Generate Infrastructure Diagram
 
 on:
   push:
@@ -6,64 +6,49 @@ on:
       - automatizacion
 
 jobs:
-  build-application:
+  generate-diagram:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repository with the Dockerfile
+      - name: Checkout the repository
         uses: actions/checkout@v3
         with:
           repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
-          ref: develop  # La rama donde se encuentra el Dockerfile de la aplicación
+          ref: develop
 
-      - name: Generate README.md
+      - name: Generate Mermaid Diagram
+        id: generate_mermaid
         run: |
-          # Generar el README.md
-          cat <<EOL > README.md
-          # Proyecto de API
+          # Extraer información de main.tf
+          main_tf_content=$(cat main.tf)
 
-          Este proyecto contiene funciones automatizadas para gestionar la API.
+          # Analizar y construir el diagrama en formato Mermaid
+          echo "graph TD;" > diagram.mermaid
 
-          ## Diagrama de Infraestructura
+          # Buscar módulos en el main.tf
+          while IFS= read -r line; do
+            if [[ $line == module* ]]; then
+              module_name=$(echo $line | awk '{print $2}')
+              echo "    $module_name[$module_name] --> AWS" >> diagram.mermaid
+            fi
+          done <<< "$main_tf_content"
 
-          ![Diagrama de Infraestructura](images/diagrama.png)
+          # Verificar el contenido del diagrama
+          cat diagram.mermaid
 
-          ## Recursos Utilizados
-
-          - EC2
-          - MongoDB
-          - Grafana
-          - Aplicaciones Web y Móviles
-          - API Backend
-
-          EOL
-          echo "README.md generado."
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Build Docker image for application
+      - name: Update README.md
         run: |
-          docker build -t palbertt/automatizacion:diagramaTF .
-
-      - name: Push Docker image for application
-        run: |
-          docker push palbertt/automatizacion:diagramaTF
-
-      - name: Configure Git
-        run: |
-          git config --local user.name "jesus huallpa"
-          git config --local user.email "jh2021071085@virtual.upt.pe"
-
-      - name: Check for changes in README.md
-        run: |
-          git diff --exit-code README.md || echo "README.md has changes"
+          echo "# Proyecto de API" > README.md
+          echo "" >> README.md
+          echo "## Diagrama de Infraestructura" >> README.md
+          echo '```mermaid' >> README.md
+          cat diagram.mermaid >> README.md
+          echo '```' >> README.md
 
       - name: Commit and Push README.md
         run: |
+          git config --local user.name "jesus huallpa"
+          git config --local user.email "jh2021071085@virtual.upt.pe"
           git add README.md
-          git commit -m "Actualizar README.md" || echo "No hay cambios para commit"
-          git push
+          git commit -m "Actualizar README.md con diagrama de infraestructura"
+          git push origin automatizacion

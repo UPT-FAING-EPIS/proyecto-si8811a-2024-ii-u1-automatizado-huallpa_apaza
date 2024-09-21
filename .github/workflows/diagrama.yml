@@ -3,7 +3,7 @@ name: Generate README.md
 on:
   push:
     branches:
-      - automatizacion
+      - DesarrolloApiBack
 
 jobs:
   generate-readme:

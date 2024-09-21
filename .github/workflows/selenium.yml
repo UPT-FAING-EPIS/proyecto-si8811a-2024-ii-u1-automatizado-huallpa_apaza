@@ -1,5 +1,6 @@
 name: Selenium Tests and Deploy to GitHub Pages
 
+# Ejecutar el workflow solo cuando se haga push o pull request a la rama feature/feature_pruebas
 on:
   push:
     branches:
@@ -13,42 +14,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Clona el repositorio específico y la rama 'feature/feature_pruebas'
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde
+          ref: feature/feature_pruebas
 
+      # Configura Java para las pruebas de Selenium (ajusta si necesitas otra versión)
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
 
+      # Instala Chrome para Selenium
       - name: Install Chrome
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
+      # Instala ChromeDriver
       - name: Set up Chrome WebDriver
         run: |
           sudo apt-get install -y unzip xvfb
           wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
           unzip /tmp/chromedriver.zip -d /usr/local/bin/
 
-      # Instala las dependencias del proyecto (ajusta esto según tu stack)
+      # Instala las dependencias del proyecto (ajusta según tu stack, puede ser Maven o Node.js)
       - name: Install dependencies
         run: |
           ./mvnw install
 
-      # Ejecuta las pruebas con Selenium
+      # Ejecuta las pruebas de Selenium usando Chrome en modo headless
       - name: Run Selenium tests
         run: |
           xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' ./mvnw test
 
-      # Generar el reporte de pruebas (aquí se asume que usas JUnit o similar)
+      # Guarda los reportes de las pruebas
       - name: Archive test reports
         if: always()
         run: mkdir -p target/test-reports
 
-      # Desplegar en GitHub Pages
+      # Despliega los reportes de las pruebas en GitHub Pages
       - name: Deploy to GitHub Pages
         if: success()
         uses: peaceiris/actions-gh-pages@v4

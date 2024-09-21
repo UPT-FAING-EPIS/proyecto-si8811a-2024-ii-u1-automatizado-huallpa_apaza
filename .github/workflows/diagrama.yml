@@ -36,9 +36,10 @@ jobs:
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
           
-          # Solo analizar el archivo main.tf
-          file="terraform_repo/main.tf"
+          # Solo analizar el archivo main.tf en la ruta correcta
+          file="terraform_repo/proyecto-si8811a-2024-ii-u1-desarrollo-api-back/main.tf"
           echo "Analizando $file"
+          
           # Extraer nombres de recursos del archivo main.tf
           grep 'resource "' $file | awk -F '"' '{print $2}' | while read resource; do
             echo "    $resource --> AWS" >> README.md
@@ -60,3 +61,4 @@ jobs:
           git add README.md
           git commit -m "Generar README.md automáticamente" || echo "No hay cambios para commit"
           git push origin DesarrolloApiBack
+

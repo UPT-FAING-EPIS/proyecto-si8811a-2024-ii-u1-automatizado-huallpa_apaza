@@ -63,7 +63,9 @@ jobs:
       # Paso 8: Guardar los reportes de las pruebas
       - name: Archive test reports
         if: always()
-        run: mkdir -p external_repo/Prueba1-Selenium/test-reports
+        run: |
+          mkdir -p external_repo/Prueba1-Selenium/test-reports
+          mv external_repo/Prueba1-Selenium/test-log.html external_repo/Prueba1-Selenium/test-reports/ || true
 
       # Paso 9: Desplegar los reportes de las pruebas en GitHub Pages
       - name: Deploy to GitHub Pages

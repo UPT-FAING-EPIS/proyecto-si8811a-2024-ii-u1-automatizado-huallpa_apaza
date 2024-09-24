@@ -56,7 +56,7 @@ jobs:
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
           
-          # Añadir las carpetas y archivos al diagrama
+          # Añadir las carpetas al diagrama
           find terraform_repo -type d | while read dir; do
             dir_name=$(basename "$dir")
             parent_dir=$(dirname "$dir" | xargs basename)
@@ -66,14 +66,24 @@ jobs:
               echo "    Root --> $dir_name" >> README.md
             fi
           done
+          
+          # Añadir los archivos al diagrama (incluyendo todos los archivos)
           find terraform_repo -type f | while read file; do
             file_name=$(basename "$file")
             dir_name=$(dirname "$file" | xargs basename)
-            echo "    $dir_name --> $file_name" >> README.md
+            
+            # Escapar palabras clave de Mermaid como 'graph'
+            if [[ "$file_name" == "graph.dot" ]]; then
+              file_name='"graph.dot"'
+            fi
+          
+            # Envolver todos los nombres de archivos en comillas para evitar conflictos
+            echo "    $dir_name --> \"$file_name\"" >> README.md
           done
           
           echo '```' >> README.md
           echo "" >> README.md
+
           
           # Añadir la lista de archivos .tf que fueron analizados
           echo "## Archivos Terraform Analizados" >> README.md

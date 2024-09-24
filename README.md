@@ -21,8 +21,6 @@ graph TD;
         CDNProfileWeb[CDN Profile] --> CDNEndpointWeb
     end
     ResourceGroup --> WebApp[Web App]
-```
-
     mongodbatlas_project --> AWS
     mongodbatlas_cluster --> AWS
     mongodbatlas_database_user --> AWS

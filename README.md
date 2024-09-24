@@ -1,4 +1,4 @@
-# DIAGRAMA
+# DIAGRAMAS 
 
 En esta rama se genera los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop la Rama donde están los archivos TF.
 

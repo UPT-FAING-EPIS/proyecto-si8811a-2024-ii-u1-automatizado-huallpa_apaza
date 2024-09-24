@@ -47,33 +47,51 @@ jobs:
               echo "    $resource --> AWS" >> README.md
             done
           done
-
-
-
-
-          echo "## Diagrama de Estructura de Archivos" >> README.md
-            
-            # Añadir las carpetas y archivos al diagrama
-            find terraform_repo -type d | while read dir; do
-              dir_name=$(basename "$dir")
-              parent_dir=$(dirname "$dir" | xargs basename)
-              if [ "$parent_dir" != "." ]; then
-                echo "    $parent_dir --> $dir_name" >> README.md
-              else
-                echo "    Root --> $dir_name" >> README.md
-              fi
-            done
-  
-            find terraform_repo -type f -name "*.tf" | while read file; do
-              file_name=$(basename "$file")
-              dir_name=$(dirname "$file" | xargs basename)
-              echo "    $dir_name --> $file_name" >> README.md
-            done
-
-
           
           echo '```' >> README.md
           echo "" >> README.md
+
+
+
+
+
+
+
+
+
+          echo "# DIAGRAMAS " > README.md
+          echo "" >> README.md
+          echo "En esta rama se genera los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop la Rama donde están los archivos TF." >> README.md
+          echo "" >> README.md
+          
+          echo "## Diagrama de Estructura de Archivos" >> README.md
+          echo '```mermaid' >> README.md
+          echo "graph TD;" >> README.md
+          
+          # Añadir las carpetas y archivos al diagrama
+          find terraform_repo -type d | while read dir; do
+            dir_name=$(basename "$dir")
+            parent_dir=$(dirname "$dir" | xargs basename)
+            if [ "$parent_dir" != "." ]; then
+              echo "    $parent_dir --> $dir_name" >> README.md
+            else
+              echo "    Root --> $dir_name" >> README.md
+            fi
+          done
+
+          find terraform_repo -type f -name "*.tf" | while read file; do
+            file_name=$(basename "$file")
+            dir_name=$(dirname "$file" | xargs basename)
+            echo "    $dir_name --> $file_name" >> README.md
+          done
+          
+          echo '```' >> README.md
+          echo "" >> README.md
+
+
+
+
+
           
           # Añadir la lista de archivos .tf que fueron analizados
           echo "## Archivos Terraform Analizados" >> README.md

@@ -5,6 +5,24 @@ En esta rama se genera los diagramas de infraestructura del repositorio proyecto
 ## Diagrama de Infraestructura
 ```mermaid
 graph TD;
+    ResourceGroup[Resource Group]
+    subgraph Backend API
+        KubernetesCluster[Kubernetes Cluster] --> RoleAssignment[Role Assignment]
+        ContainerRegistry[Container Registry] --> KubernetesCluster
+    end
+    ResourceGroup --> BackendAPI[Backend API]
+    subgraph Mobile App
+        MobileStorage[Storage Account] --> CDNEndpointMobile[CDN Endpoint]
+        CDNProfileMobile[CDN Profile] --> CDNEndpointMobile
+    end
+    ResourceGroup --> MobileApp[Mobile App]
+    subgraph Web App
+        WebStorage[Storage Account] --> CDNEndpointWeb[CDN Endpoint]
+        CDNProfileWeb[CDN Profile] --> CDNEndpointWeb
+    end
+    ResourceGroup --> WebApp[Web App]
+```
+
     mongodbatlas_project --> AWS
     mongodbatlas_cluster --> AWS
     mongodbatlas_database_user --> AWS

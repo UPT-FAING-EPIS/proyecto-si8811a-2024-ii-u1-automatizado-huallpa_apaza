@@ -73,7 +73,7 @@ graph TD;
     modules --> grafana
     modules --> docker_host
     modules --> web_app
-    terraform_repo --> ""graph.dot""
+    terraform_repo --> 'graph.dot'
     terraform_repo --> "outputs.tf"
     terraform_repo --> "main.tf"
     terraform_repo --> "diagrama.drawio"

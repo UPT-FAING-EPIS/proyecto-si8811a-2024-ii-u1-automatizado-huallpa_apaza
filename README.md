@@ -2,24 +2,9 @@
 
 En esta rama se genera los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop la Rama donde están los archivos TF.
 
-## Diagrama de Infraestructura
+## Diagrama de Estructura de Archivos
 ```mermaid
 graph TD;
-    mongodbatlas_project --> AWS
-    mongodbatlas_cluster --> AWS
-    mongodbatlas_database_user --> AWS
-    aws_s3_bucket --> AWS
-    aws_s3_bucket_website_configuration --> AWS
-    aws_s3_bucket_public_access_block --> AWS
-    aws_s3_bucket_policy --> AWS
-    grafana_cloud_stack --> AWS
-    aws_instance --> AWS
-    aws_security_group --> AWS
-    aws_s3_bucket --> AWS
-    aws_s3_bucket_website_configuration --> AWS
-    aws_s3_bucket_public_access_block --> AWS
-    aws_s3_bucket_policy --> AWS
-## Diagrama de Estructura de Archivos
     Root --> terraform_repo
     terraform_repo --> .git
     .git --> info

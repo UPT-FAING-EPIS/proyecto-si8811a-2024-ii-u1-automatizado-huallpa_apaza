@@ -58,9 +58,6 @@ jobs:
           echo "        CDNProfileWeb[CDN Profile] --> CDNEndpointWeb" >> README.md
           echo "    end" >> README.md
           echo "    ResourceGroup --> WebApp[Web App]" >> README.md
-
-          echo '```' >> README.md
-          echo "" >> README.md
           
           # Inicializar variable para almacenar la lista de archivos .tf
           tf_files=""

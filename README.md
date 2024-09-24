@@ -21,6 +21,27 @@ graph TD;
     aws_s3_bucket_policy --> AWS
 ```
 
+## Archivos Terraform Analizados
+
+- terraform_repo/outputs.tf
+- terraform_repo/main.tf
+- terraform_repo/variables.tf
+- terraform_repo/modules/mongodb/outputs.tf
+- terraform_repo/modules/mongodb/main.tf
+- terraform_repo/modules/mongodb/variables.tf
+- terraform_repo/modules/mobile_app/outputs.tf
+- terraform_repo/modules/mobile_app/main.tf
+- terraform_repo/modules/mobile_app/variables.tf
+- terraform_repo/modules/grafana/outputs.tf
+- terraform_repo/modules/grafana/main.tf
+- terraform_repo/modules/grafana/variables.tf
+- terraform_repo/modules/docker_host/outputs.tf
+- terraform_repo/modules/docker_host/main.tf
+- terraform_repo/modules/docker_host/variables.tf
+- terraform_repo/modules/web_app/outputs.tf
+- terraform_repo/modules/web_app/main.tf
+- terraform_repo/modules/web_app/variables.tf
+
 ## Recursos Utilizados
 - EC2
 - MongoDB

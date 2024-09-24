@@ -46,7 +46,7 @@ jobs:
             echo "Analizando $file"
             tf_files="$tf_files\n- $file"
             grep 'resource "' $file | awk -F '"' '{print $2}' | while read resource; do
-              echo "    $resource --> AWS;" >> README.md  # Corrected syntax
+              echo "    $resource --> AWS;" >> README.md  # Add semicolon
             done
           done
           
@@ -63,16 +63,16 @@ jobs:
             dir_name=$(basename "$dir")
             parent_dir=$(dirname "$dir" | xargs basename)
             if [ "$parent_dir" != "." ]; then
-              echo "    $parent_dir --> $dir_name;" >> README.md  # Corrected syntax
+              echo "    $parent_dir --> $dir_name;" >> README.md  # Add semicolon
             else
-              echo "    Root --> $dir_name;" >> README.md  # Corrected syntax
+              echo "    Root --> $dir_name;" >> README.md  # Add semicolon
             fi
           done
       
           find terraform_repo -type f | while read file; do
             file_name=$(basename "$file")
             dir_name=$(dirname "$file" | xargs basename)
-            echo "    $dir_name --> $file_name;" >> README.md  # Corrected syntax
+            echo "    $dir_name --> $file_name;" >> README.md  # Add semicolon
           done
           
           echo '```' >> README.md
@@ -89,6 +89,7 @@ jobs:
           echo "- Grafana" >> README.md
           echo "- Aplicaciones Web y Móviles" >> README.md
           echo "- API Backend" >> README.md
+
 
 
       - name: Commit and Push README.md

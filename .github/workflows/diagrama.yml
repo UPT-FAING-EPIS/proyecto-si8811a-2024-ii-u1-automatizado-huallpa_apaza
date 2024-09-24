@@ -28,9 +28,9 @@ jobs:
 
       - name: Generate README.md
         run: |
-          echo "# Proyecto de API" > README.md
+          echo "# DIAGRAMA" > README.md
           echo "" >> README.md
-          echo "Este proyecto contiene funciones automatizadas para gestionar la API." >> README.md
+          echo "En esta rama se genera los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop la Rama donde están los archivos TF." >> README.md
           echo "" >> README.md
           echo "## Diagrama de Infraestructura" >> README.md
           echo '```mermaid' >> README.md

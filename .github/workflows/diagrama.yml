@@ -35,6 +35,32 @@ jobs:
           echo "## Diagrama de Infraestructura" >> README.md
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
+
+          echo "    ResourceGroup[Resource Group]" >> README.md
+          
+          # Subgraph for Backend API
+          echo "    subgraph Backend API" >> README.md
+          echo "        KubernetesCluster[Kubernetes Cluster] --> RoleAssignment[Role Assignment]" >> README.md
+          echo "        ContainerRegistry[Container Registry] --> KubernetesCluster" >> README.md
+          echo "    end" >> README.md
+          echo "    ResourceGroup --> BackendAPI[Backend API]" >> README.md
+
+          # Subgraph for Mobile App
+          echo "    subgraph Mobile App" >> README.md
+          echo "        MobileStorage[Storage Account] --> CDNEndpointMobile[CDN Endpoint]" >> README.md
+          echo "        CDNProfileMobile[CDN Profile] --> CDNEndpointMobile" >> README.md
+          echo "    end" >> README.md
+          echo "    ResourceGroup --> MobileApp[Mobile App]" >> README.md
+
+          # Subgraph for Web App
+          echo "    subgraph Web App" >> README.md
+          echo "        WebStorage[Storage Account] --> CDNEndpointWeb[CDN Endpoint]" >> README.md
+          echo "        CDNProfileWeb[CDN Profile] --> CDNEndpointWeb" >> README.md
+          echo "    end" >> README.md
+          echo "    ResourceGroup --> WebApp[Web App]" >> README.md
+
+          echo '```' >> README.md
+          echo "" >> README.md
           
           # Inicializar variable para almacenar la lista de archivos .tf
           tf_files=""

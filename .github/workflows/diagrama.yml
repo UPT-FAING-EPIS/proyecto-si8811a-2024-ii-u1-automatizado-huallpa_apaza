@@ -52,8 +52,6 @@ jobs:
 
 
           echo "## Diagrama de Estructura de Archivos" >> README.md
-            echo '```mermaid' >> README.md
-            echo "graph TD;" >> README.md
             
             # Añadir las carpetas y archivos al diagrama
             find terraform_repo -type d | while read dir; do

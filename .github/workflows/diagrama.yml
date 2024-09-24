@@ -53,12 +53,12 @@ jobs:
           echo '```' >> README.md
           echo "" >> README.md
           
-          # Segundo Diagrama: Estructura de Archivos
+          # Segundo Diagrama: Estructura de Archivos (incluyendo todos los archivos, no solo .tf)
           echo "## Diagrama de Estructura de Archivos" >> README.md
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
           
-          # Añadir las carpetas y archivos al diagrama
+          # Añadir las carpetas y archivos al diagrama, incluyendo todos los archivos
           find terraform_repo -type d | while read dir; do
             dir_name=$(basename "$dir")
             parent_dir=$(dirname "$dir" | xargs basename)
@@ -69,7 +69,8 @@ jobs:
             fi
           done
 
-          find terraform_repo -type f -name "*.tf" | while read file; do
+          # Incluir todos los archivos, no solo .tf
+          find terraform_repo -type f | while read file; do
             file_name=$(basename "$file")
             dir_name=$(dirname "$file" | xargs basename)
             echo "    $dir_name --> $file_name" >> README.md

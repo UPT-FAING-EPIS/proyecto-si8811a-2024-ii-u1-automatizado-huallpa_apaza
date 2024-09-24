@@ -20,8 +20,6 @@ graph TD;
     aws_s3_bucket_public_access_block --> AWS
     aws_s3_bucket_policy --> AWS
 ## Diagrama de Estructura de Archivos
-```mermaid
-graph TD;
     Root --> terraform_repo
     terraform_repo --> .git
     .git --> info

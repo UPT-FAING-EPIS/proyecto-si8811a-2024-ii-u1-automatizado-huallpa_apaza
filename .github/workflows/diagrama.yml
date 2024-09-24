@@ -25,24 +25,26 @@ jobs:
           curl -LO https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
           unzip terraform_1.0.0_linux_amd64.zip
           sudo mv terraform /usr/local/bin/
+
       - name: Generate README.md
         run: |
           echo "# DIAGRAMAS " > README.md
           echo "" >> README.md
-          echo "En esta rama se genera los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop la Rama donde están los archivos TF." >> README.md
+          echo "En esta rama se generan los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop, la rama donde están los archivos TF." >> README.md
           echo "" >> README.md
+          
+          # Primer Diagrama: Diagrama de Infraestructura
           echo "## Diagrama de Infraestructura" >> README.md
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
           
           # Inicializar variable para almacenar la lista de archivos .tf
           tf_files=""
-          
+
           # Analizar los archivos .tf en el repositorio clonado
           for file in $(find terraform_repo -name "*.tf"); do
             echo "Analizando $file"
             tf_files="$tf_files\n- $file"
-            # Modificar el grep y awk para extraer los nombres sin comillas
             grep 'resource "' $file | awk -F '"' '{print $2}' | while read resource; do
               echo "    $resource --> AWS" >> README.md
             done
@@ -50,20 +52,8 @@ jobs:
           
           echo '```' >> README.md
           echo "" >> README.md
-
-
-
-
-
-
-
-
-
-          echo "# DIAGRAMAS " > README.md
-          echo "" >> README.md
-          echo "En esta rama se genera los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop la Rama donde están los archivos TF." >> README.md
-          echo "" >> README.md
           
+          # Segundo Diagrama: Estructura de Archivos
           echo "## Diagrama de Estructura de Archivos" >> README.md
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
@@ -87,11 +77,6 @@ jobs:
           
           echo '```' >> README.md
           echo "" >> README.md
-
-
-
-
-
           
           # Añadir la lista de archivos .tf que fueron analizados
           echo "## Archivos Terraform Analizados" >> README.md
@@ -104,6 +89,7 @@ jobs:
           echo "- Grafana" >> README.md
           echo "- Aplicaciones Web y Móviles" >> README.md
           echo "- API Backend" >> README.md
+
       - name: Commit and Push README.md
         run: |
           git config --local user.name "jesus huallpa"

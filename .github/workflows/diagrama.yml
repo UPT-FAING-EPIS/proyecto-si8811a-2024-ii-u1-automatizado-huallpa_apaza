@@ -66,7 +66,7 @@ jobs:
               echo "    Root --> $dir_name" >> README.md
             fi
           done
-          find terraform_repo -type f -name "*.tf" | while read file; do
+          find terraform_repo -type f | while read file; do
             file_name=$(basename "$file")
             dir_name=$(dirname "$file" | xargs basename)
             echo "    $dir_name --> $file_name" >> README.md

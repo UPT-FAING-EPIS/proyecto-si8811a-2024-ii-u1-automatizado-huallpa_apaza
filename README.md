@@ -1,6 +1,6 @@
-# Proyecto de API
+# DIAGRAMA
 
-Este proyecto contiene funciones automatizadas para gestionar la API.
+En esta rama se genera los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop la Rama donde están los archivos TF.
 
 ## Diagrama de Infraestructura
 ```mermaid

@@ -103,7 +103,13 @@ jobs:
 
 
 
-# CI/CD Pipeline
+
+
+
+
+
+
+### CI/CD Pipeline
 
    Este repositorio utiliza un pipeline de CI/CD configurado con **GitHub Actions** para automatizar la construcción y despliegue de la aplicación. A continuación, se describe la configuración y los pasos involucrados en el pipeline.
 

@@ -8,7 +8,7 @@ on:
 jobs:
   build-application:
     runs-on: ubuntu-latest
-
+ 
     steps:
       - name: Checkout the repository with the Dockerfile
         uses: actions/checkout@v3

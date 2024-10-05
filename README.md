@@ -43,30 +43,36 @@ graph TD;
     objects --> info
     objects --> 3c
     objects --> 0c
+    objects --> 88
     objects --> 19
     objects --> f7
     objects --> da
     objects --> 60
     objects --> 74
+    objects --> f8
     objects --> 5e
     objects --> 50
     objects --> d0
     objects --> eb
     objects --> pack
+    objects --> f9
     objects --> 99
+    objects --> 79
     objects --> 53
     objects --> 21
     objects --> 80
     objects --> e6
     objects --> 9b
-    objects --> 56
     objects --> 15
     objects --> f2
+    objects --> 47
     objects --> 0d
     objects --> ff
     objects --> f0
     objects --> de
     objects --> f4
+    terraform_repo --> .github
+    .github --> workflows
     terraform_repo --> modules
     modules --> mongodb
     modules --> mobile_app
@@ -104,25 +110,28 @@ graph TD;
     3c --> fb9d582fac49781ccb3e6967cd27667360bb0c
     3c --> d1b90689598bf1a847fb1110a3acdd3d5f678a
     0c --> ead1182fe4490d1dc80d1dbc3e82e159d30ac8
+    88 --> 5e03a0af6af495b7ef7e480f18eed4bf19927e
     19 --> 98130a65e8f0bfc874ca1c3d5958ac94c3b598
     f7 --> 918ae166ac54fdf98bf99cea09fe9cf3533e9e
     da --> 8ed2bc72340ba7cefc3867f007d5f81b9a3032
     60 --> 06670925f1b4d88bcf39876b4098c81ecedae7
     74 --> 4b623461fa15a9815a2ad4e5a774c7b305b9c8
+    f8 --> 1158a28f0c7febc6d9af4b2c243ffeb60367a3
     5e --> 530994fa852b48b1c0a7791f5000575012238c
-    5e --> 96c68cfa0a6c194b0bff63b88d8a689f1d0f3c
     50 --> 57c9dd88be527c26099172050e71bb3e03a32a
     d0 --> 806a5d3e3aaf2999cf9a3ead4a73fd414a28ce
     eb --> e00bb3bb7de77cde8cea1f16d0d50b21669a5d
+    f9 --> f2d0ab7a3301479389b840ea44603b8be275e4
     99 --> 6f2f7d0b9ee9917205aa72077616c149e15aff
+    79 --> 806f8c88aacd4db0166e2f9dfb0d357821eaf1
     53 --> 2e5cc0588dec359896af1ba495354d128c8a7e
     21 --> 280aa498e236d181789f1d071a8d8acf2c9f53
     80 --> de20b2302ba1391533d014ca2bf0922fea360c
     e6 --> 9de29bb2d1d6434b8b29ae775ad8c2e48c5391
     9b --> bf54b484ef0293668496bb19ed808d2628b338
-    56 --> 9525bdb527de9d050a539220b60abb017a1890
     15 --> c4a99f0524ef2c00661f48cbe8160295888bf1
     f2 --> 180d68bbeae7de85cb63afe2b84a648555fa68
+    47 --> 5168b573d32318265d7ef9d7a623cd8938497a
     0d --> befb67f23c5964dcb4de15613b68b23b9d25e0
     ff --> b86cb69cff8a3cac7c8d909d40e98bf6e594e6
     f0 --> dfce682a22b1f08edcf9dcd9bde590b6c46f11
@@ -131,7 +140,7 @@ graph TD;
     .git --> HEAD
     .git --> FETCH_HEAD
     terraform_repo --> README.md
-    terraform_repo --> terraform.tfvars
+    workflows --> terraform.yml
     terraform_repo --> variables.tf
     terraform_repo --> .txt
     mongodb --> outputs.tf
@@ -149,6 +158,7 @@ graph TD;
     web_app --> outputs.tf
     web_app --> main.tf
     web_app --> variables.tf
+    terraform_repo --> terraform.tfvars.template
 ```
 
 ## Archivos Terraform Analizados

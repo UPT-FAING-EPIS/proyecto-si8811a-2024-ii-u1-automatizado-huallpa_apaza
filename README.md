@@ -14,6 +14,7 @@ El flujo de trabajo se ejecuta cada vez que se realiza un `push` a la rama `auto
 
 ## Flujo del trabajo
 
+```mermaid
 graph TD;
     A[Inicio: Push a la rama automatizacion] --> B[Checkout del repositorio];
     B --> C[Login en Docker Hub];
@@ -21,13 +22,13 @@ graph TD;
     D --> E[Construir la imagen Docker];
     E --> F[Publicar la imagen en Docker Hub];
     F --> G[Fin del flujo de trabajo];
-
+```
 
 ## Contenido del Flujo de Trabajo
+El flujo de trabajo está definido en el archivo .github/workflows/build-and-push.yml y se ve así:
 
-El flujo de trabajo está definido en el archivo `.github/workflows/build-and-push.yml` y se ve así:
+```mermaid
 
-```yaml
 name: Build and Push Docker Images
 
 on:

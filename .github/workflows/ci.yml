@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout el repositorio con el Dockerfile
+      # Checkout el repositorio que contiene requirements.txt
       - name: Checkout the pruebas repository
         uses: actions/checkout@v3
         with:
@@ -29,7 +29,7 @@ jobs:
         run: |
           echo 'FROM python:3.9-slim' > Dockerfile
           echo 'WORKDIR /app' >> Dockerfile
-          echo 'COPY requirements.txt .' >> Dockerfile  # Este archivo debería estar en la raíz del checkout
+          echo 'COPY requirements.txt .' >> Dockerfile  # Este archivo debe estar en la raíz del checkout
           echo 'RUN pip install --no-cache-dir -r requirements.txt' >> Dockerfile
           echo 'COPY . .' >> Dockerfile
           echo 'CMD ["python", "app.py"]' >> Dockerfile
@@ -37,7 +37,7 @@ jobs:
       # Build y push de la imagen
       - name: Build Docker image for application
         run: |
-          docker build -t palbertt/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde:Selenium
+          docker build -t palbertt/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde:Selenium .
 
       - name: Push Docker image for application
         run: |

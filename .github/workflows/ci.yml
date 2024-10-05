@@ -32,13 +32,13 @@ jobs:
           echo 'COPY requirements.txt .' >> Dockerfile  # Este archivo debería estar en la raíz del checkout
           echo 'RUN pip install --no-cache-dir -r requirements.txt' >> Dockerfile
           echo 'COPY . .' >> Dockerfile
-          echo 'CMD ["python", "app.py"]' >> Dockerfile  # Cambia 'app.py' por tu archivo principal
+          echo 'CMD ["python", "app.py"]' >> Dockerfile
 
       # Build y push de la imagen
       - name: Build Docker image for application
         run: |
-          docker build -t palbertt/automatizacion:latest .
+          docker build -t palbertt/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde:Selenium
 
       - name: Push Docker image for application
         run: |
-          docker push palbertt/automatizacion:latest
+          docker push palbertt/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde:Selenium

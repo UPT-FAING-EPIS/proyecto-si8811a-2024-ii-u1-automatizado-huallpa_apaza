@@ -1,76 +1,39 @@
-name: Selenium Tests and Deploy to GitHub Pages
+name: Download and Setup Selenium Tests
 
-# Ejecutar el workflow solo cuando haya un push o pull request a la rama main en TU repositorio
 on:
   push:
     branches:
-      - main  # Cambia "main" por la rama de tu repositorio si es diferente
-  pull_request:
-    branches:
-      - main  # Cambia "main" por la rama de tu repositorio si es diferente
+      - main
+  workflow_dispatch:
 
 jobs:
-  selenium-tests:
+  setup-selenium-tests:
     runs-on: ubuntu-latest
 
     steps:
-      # Paso 1: Checkout de tu repositorio y rama actual
-      - name: Checkout your repository
-        uses: actions/checkout@v3
+    - name: Checkout your repo
+      uses: actions/checkout@v3
 
-      # Paso 2: Clonar el repositorio externo en la rama 'feature/feature_pruebas'
-      - name: Checkout external repository
-        uses: actions/checkout@v3
-        with:
-          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde
-          ref: feature/feature_pruebas
-          path: external_repo
+    - name: Clone Selenium Test Repo
+      run: |
+        git clone https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde
+        cp -r proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde/* .
 
-      # Paso 3: Configurar Java para las pruebas de Selenium
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '11'
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
 
-      # Paso 4: Instalar Chrome para Selenium
-      - name: Install Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+    - name: Run tests
+      run: |
+        pytest --browser=chrome --alluredir=./allure-results
+        pytest --browser=firefox --alluredir=./allure-results
 
-      # Paso 5: Instalar ChromeDriver
-      - name: Set up Chrome WebDriver
-        run: |
-          sudo apt-get install -y unzip xvfb
-          wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
-          unzip /tmp/chromedriver.zip -d /usr/local/bin/
+    - name: Generate Allure report
+      run: |
+        allure generate ./allure-results -o ./allure-report --clean
 
-      # Paso 6: Navegar a la carpeta Prueba1-Selenium e instalar las dependencias del proyecto (si usa Python)
-      - name: Install dependencies (Python)
-        run: |
-          cd external_repo/Prueba1-Selenium
-          python3 -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
-
-      # Paso 7: Ejecutar las pruebas de Selenium (confest.py, test_eventos.py, test_log.py, test_login.py)
-      - name: Run Selenium tests
-        run: |
-          cd external_repo/Prueba1-Selenium
-          xvfb-run --auto-servernum --server-args='-screen 0 1920x1080x24' pytest confest.py test_eventos.py test_log.py test_login.py
-
-      # Paso 8: Guardar los reportes de las pruebas
-      - name: Archive test reports
-        if: always()
-        run: |
-          mkdir -p external_repo/Prueba1-Selenium/test-reports
-          mv external_repo/Prueba1-Selenium/test-log.html external_repo/Prueba1-Selenium/test-reports/ || true
-
-      # Paso 9: Desplegar los reportes de las pruebas en GitHub Pages
-      - name: Deploy to GitHub Pages
-        if: success()
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: external_repo/Prueba1-Selenium/test-reports
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./allure-report

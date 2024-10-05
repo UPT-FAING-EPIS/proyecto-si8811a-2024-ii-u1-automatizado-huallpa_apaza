@@ -8,7 +8,7 @@ on:
 jobs:
   build-images:
     runs-on: ubuntu-latest
-
+ 
     steps:
       # Checkout el primer repositorio con el Dockerfile
       - name: Checkout the repository with the Dockerfile

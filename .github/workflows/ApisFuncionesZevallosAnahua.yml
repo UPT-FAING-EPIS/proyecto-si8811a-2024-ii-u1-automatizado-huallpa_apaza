@@ -40,5 +40,6 @@ jobs:
 
       - name: Deploy Docker Container
         run: |
-          docker run -d -p 5000:5000 palbertt/automatizacion:api2-v1.0.0
+          docker run -d -p 5000:8000 palbertt/automatizacion:api2-v1.0.0
+
  

@@ -100,4 +100,82 @@ jobs:
       - name: Deploy Docker Container
         run: |
           docker run -d -p 5000:5000 palbertt/automatizacion:api2-v1.0.0
+# CI/CD Pipeline
+
+Este repositorio utiliza un pipeline de CI/CD configurado con GitHub Actions para automatizar la construcción y despliegue de la aplicación. A continuación, se describe la configuración y los pasos involucrados en el pipeline.
+
+## Descripción General
+
+El pipeline se activa en cada `push` a la rama `ApisFunciones` y realiza las siguientes acciones:
+
+1. Clona el repositorio actual.
+2. Configura el entorno de Python.
+3. Instala las dependencias del proyecto.
+4. Configura Docker Buildx.
+5. Almacena en caché las capas de Docker para optimizar el tiempo de construcción.
+6. Inicia sesión en Docker Hub.
+7. Construye y sube la imagen Docker.
+8. Despliega el contenedor Docker.
+
+## Configuración del Pipeline
+
+El pipeline está configurado en el archivo `.github/workflows/ci-cd-pipeline.yml`. A continuación se detalla la estructura del archivo:
+
+```yaml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - ApisFunciones  # Cambia esto según la rama correcta que uses
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v3
+        with:
+          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-apis-y-funciones-meza-y-churacutipa
+          ref: desarrollo
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12  # La versión que usa el Dockerfile
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .  # Directorio del repositorio actual
+          file: Dockerfile  # Usa el Dockerfile del proyecto
+          push: true
+          tags: palbertt/automatizacion:api1-v1.0.0
+
+      - name: Deploy Docker Container
+        run: |
+          docker run -d -p 5000:5000 palbertt/automatizacion:api1-v1.0.0
 

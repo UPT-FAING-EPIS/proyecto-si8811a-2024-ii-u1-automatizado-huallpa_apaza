@@ -32,7 +32,7 @@ jobs:
           context: ./external-repo/api_lugares  # Asegúrate de que este es el directorio correcto
           file: ./external-repo/api_lugares/Dockerfile  # Ruta completa al Dockerfile
           push: true
-          tags: palbertt/automatizacion:api2-v1.0.0
+          tags: palbertt/proyecto-si8811a-2024-ii-u1-api-y-funciones-zevallos-y-anahua:api2-v1.0.0
 
       # Paso opcional para verificar permisos de archivos si es necesario
       - name: Set file permissions (if needed)
@@ -40,5 +40,5 @@ jobs:
 
       - name: Deploy Docker Container
         run: |
-          docker run -d -p 5000:5000 palbertt/automatizacion:api2-v1.0.0
+          docker run -d -p 5000:5000 palbertt/proyecto-si8811a-2024-ii-u1-api-y-funciones-zevallos-y-anahua:api2-v1.0.0
  

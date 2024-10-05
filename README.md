@@ -1,4 +1,32 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/vK6WBQ1t)
-[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=15560953)1
+# Documentación del Proyecto
 
-prueba ussies 15
+Este repositorio contiene la documentación y los detalles del proyecto relacionado con la automatización y el desarrollo de APIs utilizando Docker.
+
+## Repositorios de Docker
+
+A continuación se presentan los enlaces a los repositorios de Docker relacionados con este proyecto:
+
+1. **Desarrollo de API Back**  
+   [Repositorio Docker: proyecto-si8811a-2024-ii-u1-desarrollo-api-back](https://hub.docker.com/r/palbertt/proyecto-si8811a-2024-ii-u1-desarrollo-api-back)
+
+2. **Automatización**  
+   [Repositorio Docker: Automatización](https://hub.docker.com/repository/docker/palbertt/automatizacion/general)
+
+3. **Pruebas**  
+   [Repositorio Docker: proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde](https://hub.docker.com/repository/docker/palbertt/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde/general)
+
+## Descripción del Proyecto
+
+Este proyecto tiene como objetivo implementar un flujo de trabajo automatizado que facilite el desarrollo, pruebas y despliegue de aplicaciones. Utiliza tecnologías como Docker y GitHub Actions para lograr una integración continua y entrega continua (CI/CD).
+
+## Cómo Usar
+
+Para obtener más información sobre cómo utilizar las imágenes de Docker y cómo contribuir a este proyecto, consulta la documentación específica de cada repositorio.
+
+## Contribuciones
+
+Si deseas contribuir al proyecto, por favor, sigue las guías de contribución en cada uno de los repositorios mencionados anteriormente.
+
+## Contacto
+
+Para consultas, no dudes en ponerte en contacto con el administrador del repositorio.

@@ -128,6 +128,7 @@ Este proyecto implementa un pipeline de CI/CD que automatiza la construcción y 
 ## Flujo de Trabajo Automatizado
 ### Diagrama de Flujo de Trabajo - Archivo YAML 2
 
+```mermaid
 graph TD
     A[Push a rama 'ApisFunciones'] --> B[Checkout del Repositorio]
     B --> C[Configuración de Python]
@@ -139,7 +140,7 @@ graph TD
     H --> I[Push de Imagen a Docker Hub]
     I --> J[Despliegue del Contenedor Docker]
     J --> K[API expuesta en puerto 5000]
-
+```
 
 ### Activación del Flujo de Trabajo
 

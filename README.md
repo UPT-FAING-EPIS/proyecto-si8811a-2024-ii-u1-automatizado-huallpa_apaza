@@ -126,6 +126,7 @@ Este proyecto implementa un pipeline de CI/CD que automatiza la construcción y 
 - **Python**: Lenguaje de programación y manejo de dependencias.
 
 ## Flujo de Trabajo Automatizado
+
 ### Diagrama de Flujo de Trabajo - Archivo YAML 2
 
 ```mermaid

@@ -102,33 +102,57 @@ jobs:
           docker run -d -p 5000:5000 palbertt/automatizacion:api2-v1.0.0
 
 
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/vK6WBQ1t)
+[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=15560953)
 
+# CI/CD Pipeline para Automatización de API de Lugares
 
+## Descripción
 
+Este proyecto implementa un pipeline de CI/CD que automatiza la construcción y despliegue de una API de lugares utilizando **GitHub Actions** y **Docker**. El pipeline realiza tareas como la construcción de imágenes Docker, la instalación de dependencias de Python, y el despliegue automático del contenedor.
 
+## Tecnologías Utilizadas
 
+- **GitHub Actions**: Automatización de CI/CD.
+- **Docker**: Contenerización de la aplicación.
+- **Docker Hub**: Almacenamiento de imágenes Docker.
+- **Python**: Lenguaje de programación y manejo de dependencias.
 
+## Flujo de Trabajo Automatizado
 
-### CI/CD Pipeline
+### Activación del Flujo de Trabajo
 
-   Este repositorio utiliza un pipeline de CI/CD configurado con **GitHub Actions** para automatizar la construcción y despliegue de la aplicación. A continuación, se describe la configuración y los pasos involucrados en el pipeline.
+El pipeline se activa automáticamente cuando se realiza un `push` en la rama `ApisFunciones`.
 
-## Descripción General
+### Paso a Paso del Flujo de Trabajo
 
-   El pipeline se activa en cada `push` a la rama `ApisFunciones` y realiza las siguientes acciones:
+1. **Clonación del Repositorio Actual**:
+   - El repositorio principal se clona desde la rama `desarrollo` para obtener el código actualizado.
 
-   1. **Clona el repositorio actual.**
-   2. **Configura el entorno de Python.**
-   3. **Instala las dependencias del proyecto.**
-   4. **Configura Docker Buildx.**
-   5. **Almacena en caché las capas de Docker** para optimizar el tiempo de construcción.
-   6. **Inicia sesión en Docker Hub.**
-   7. **Construye y sube la imagen Docker.**
-   8. **Despliega el contenedor Docker.**
+2. **Configuración del Entorno Python**:
+   - Se configura Python en el runner de GitHub para asegurar que todas las dependencias requeridas estén instaladas correctamente.
 
-## Configuración del Pipeline
+3. **Instalación de Dependencias**:
+   - `pip` instala todas las dependencias del proyecto listadas en `requirements.txt`.
 
-   El pipeline está configurado en el archivo `.github/workflows/ci-cd-pipeline.yml`. A continuación se detalla la estructura del archivo:
+4. **Configuración de Docker Buildx**:
+   - Se configura Docker Buildx para habilitar construcciones multiplataforma y cacheo avanzado de capas.
+
+5. **Caché de Capas de Docker**:
+   - Se almacena la caché de las capas de Docker para acelerar construcciones futuras.
+
+6. **Login en Docker Hub**:
+   - Se realiza la autenticación en Docker Hub usando las credenciales de usuario almacenadas como secretos en GitHub.
+
+7. **Construcción y Push de la Imagen Docker**:
+   - La imagen Docker se construye y se sube automáticamente a Docker Hub con la etiqueta especificada.
+
+8. **Despliegue del Contenedor Docker**:
+   - El contenedor Docker se despliega en segundo plano y la API se expone en el puerto 5000.
+
+### Archivo YAML - GitHub Actions
+
+Este es el archivo YAML completo que configura el flujo de trabajo para CI/CD:
 
 ```yaml
 name: CI/CD Pipeline
@@ -140,50 +164,50 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # El trabajo se ejecuta en un runner de Ubuntu
 
     steps:
-      - name: Checkout current repository
-        uses: actions/checkout@v3
-        with:
-          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-apis-y-funciones-meza-y-churacutipa
-          ref: desarrollo
+    - name: Checkout current repository  # Clona el repositorio actual
+      uses: actions/checkout@v3
+      with:
+        repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-apis-y-funciones-meza-y-churacutipa  # Especifica el repositorio
+        ref: desarrollo  # Rama de la cual se hace checkout
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12  # La versión que usa el Dockerfile
+    - name: Set up Python  # Configuración del entorno Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12  # Versión de Python utilizada en el Dockerfile
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    - name: Install dependencies  # Instalación de dependencias del proyecto
+      run: |
+        python -m pip install --upgrade pip  # Actualiza pip
+        pip install -r requirements.txt  # Instala las dependencias desde requirements.txt
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+    - name: Set up Docker Buildx  # Configuración de Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
+    - name: Cache Docker layers  # Habilita caché para las capas de Docker
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache  # Ruta para almacenar la caché
+        key: ${{ runner.os }}-docker-${{ github.sha }}  # Clave única para identificar la caché
+        restore-keys: |
+          ${{ runner.os }}-docker-  # Claves para restaurar la caché si está disponible
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    - name: Log in to Docker Hub  # Autenticación en Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}  # Usuario de Docker Hub almacenado en secretos
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}  # Token de acceso de Docker Hub almacenado en secretos
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .  # Directorio del repositorio actual
-          file: Dockerfile  # Usa el Dockerfile del proyecto
-          push: true
-          tags: palbertt/automatizacion:api1-v1.0.0
+    - name: Build and push Docker image  # Construcción y push de la imagen Docker
+      uses: docker/build-push-action@v4
+      with:
+        context: .  # Contexto de la construcción (repositorio actual)
+        file: Dockerfile  # Especifica el Dockerfile para construir la imagen
+        push: true  # La imagen se sube a Docker Hub
+        tags: palbertt/automatizacion:api1-v1.0.0  # Etiqueta de la imagen
 
-      - name: Deploy Docker Container
-        run: |
-          docker run -d -p 5000:5000 palbertt/automatizacion:api1-v1.0.0
+    - name: Deploy Docker Container  # Despliegue del contenedor Docker
+      run: |
+        docker run -d -p 5000:5000 palbertt/automatizacion:api1-v1.0.0  # Despliega el contenedor y lo expone en el puerto 5000

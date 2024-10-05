@@ -50,10 +50,10 @@ jobs:
         context: .  # Directorio del repositorio actual
         file: Dockerfile  # Usa el Dockerfile del proyecto
         push: true
-        tags: palbertt/automatizacion:api1-v1.0.0
+        tags: palbertt/proyecto-si8811a-2024-ii-u1-apis-y-funciones-meza-y-churacutipa:api1-v1.0.0
 
     - name: Deploy Docker Container
       run: |
-        docker run -d -p 5000:5000 palbertt/proyecto-si8811a-2024-ii-u1-apis-y-funciones-meza-y-churacutipa:api1
+        docker run -d -p 5000:5000 palbertt/proyecto-si8811a-2024-ii-u1-apis-y-funciones-meza-y-churacutipa:api1-v1.0.0
 
     

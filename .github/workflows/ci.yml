@@ -3,19 +3,19 @@ name: Build and Push Docker Images
 on:
   push:
     branches:
-      - automatizacion  # Ajusta esto según la rama desde la cual quieres activar el pipeline
+      - automatizacion
 
 jobs:
   build-images:
     runs-on: ubuntu-latest
- 
+
     steps:
-      # Checkout el primer repositorio con el Dockerfile
-      - name: Checkout the repository with the Dockerfile
+      # Checkout el repositorio
+      - name: Checkout the repository
         uses: actions/checkout@v3
         with:
           repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
-          ref: desarrollo  # La rama donde se encuentra el Dockerfile de la aplicación
+          ref: main
 
       # Login en Docker Hub
       - name: Log in to Docker Hub
@@ -24,7 +24,17 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # Build y push de la imagen 'latest' para el primer repositorio
+      # Crear un Dockerfile temporal
+      - name: Create Dockerfile
+        run: |
+          echo 'FROM python:3.9-slim' >> Dockerfile
+          echo 'WORKDIR /app' >> Dockerfile
+          echo 'COPY requirements.txt .' >> Dockerfile
+          echo 'RUN pip install --no-cache-dir -r requirements.txt' >> Dockerfile
+          echo 'COPY . .' >> Dockerfile
+          echo 'CMD ["python", "app.py"]' >> Dockerfile  # Cambia 'app.py' por el nombre de tu archivo principal
+
+      # Build y push de la imagen
       - name: Build Docker image for application
         run: |
           docker build -t palbertt/automatizacion:latest .
@@ -32,27 +42,3 @@ jobs:
       - name: Push Docker image for application
         run: |
           docker push palbertt/automatizacion:latest
-
-      # Checkout el segundo repositorio con el Dockerfile
-      - name: Checkout the pruebas repository
-        uses: actions/checkout@v3
-        with:
-          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde
-          ref: feature/feature_pruebas  # La rama para construir la segunda imagen
-
-      # Verifica si Dockerfile existe en el segundo repositorio
-      - name: Verify Dockerfile presence
-        run: |
-          if [ ! -f Dockerfile ]; then
-            echo "Dockerfile not found in the repository!"
-            exit 1
-          fi
-
-      # Build y push de la imagen 'Pruebas-Selenium' para el segundo repositorio
-      - name: Build Docker image for pruebas branch
-        run: |
-          docker build -t palbertt/automatizacion:Pruebas-Selenium .
-
-      - name: Push Docker image for pruebas branch
-        run: |
-          docker push palbertt/automatizacion:Pruebas-Selenium

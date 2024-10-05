@@ -1,24 +1,31 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/vK6WBQ1t)
 [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=15560953)
 
-# Proyecto: Automatización de API de Lugares
+# Automatización de Despliegue de API de Lugares con GitHub Actions y Docker
 
-## Descripción
+## Descripción del Proyecto
 
-Este proyecto se centra en la automatización del flujo de trabajo para el despliegue de la API de lugares utilizando **GitHub Actions**. El proceso incluye la construcción de imágenes Docker y el despliegue de contenedores.
+Este proyecto automatiza el despliegue de una API de lugares utilizando GitHub Actions y Docker. El flujo de trabajo se activa automáticamente en cada `push` en la rama `ApisFunciones`, y realiza tareas como la construcción de imágenes Docker, la autenticación en Docker Hub y el despliegue de contenedores.
 
 ## Tecnologías Utilizadas
 
-- **GitHub Actions**: Para la integración continua y el despliegue continuo (CI/CD).
-- **Docker**: Para la contenedorización de la aplicación.
-- **Docker Hub**: Para almacenar las imágenes Docker.
+- **GitHub Actions**: Integración continua y despliegue continuo (CI/CD).
+- **Docker**: Contenerización de aplicaciones.
+- **Docker Hub**: Almacenamiento de imágenes Docker.
 
 ## Flujo de Trabajo Automatizado
 
-### Activación del Flujo de Trabajo
+### Diagrama de Flujo de Trabajo - Archivo YAML 1
 
-El flujo de trabajo se activa mediante un `push` en la rama `ApisFunciones`.
-
+```mermaid
+graph TD
+    A[Push en ApisFunciones] --> B[Checkout del Repositorio]
+    B --> C[Clonación de Repositorio Externo]
+    C --> D[Login en Docker Hub]
+    D --> E[Construcción de Imagen Docker]
+    E --> F[Push de Imagen a Docker Hub]
+    F --> G[Despliegue de Contenedor Docker]
+```
 ### Pasos del Flujo de Trabajo
 
 1. **Checkout del Repositorio**:
@@ -119,6 +126,20 @@ Este proyecto implementa un pipeline de CI/CD que automatiza la construcción y 
 - **Python**: Lenguaje de programación y manejo de dependencias.
 
 ## Flujo de Trabajo Automatizado
+### Diagrama de Flujo de Trabajo - Archivo YAML 2
+
+graph TD
+    A[Push a rama 'ApisFunciones'] --> B[Checkout del Repositorio]
+    B --> C[Configuración de Python]
+    C --> D[Instalación de Dependencias]
+    D --> E[Configuración de Docker Buildx]
+    E --> F[Caché de Capas Docker]
+    F --> G[Login en Docker Hub]
+    G --> H[Construcción de Imagen Docker]
+    H --> I[Push de Imagen a Docker Hub]
+    I --> J[Despliegue del Contenedor Docker]
+    J --> K[API expuesta en puerto 5000]
+
 
 ### Activación del Flujo de Trabajo
 

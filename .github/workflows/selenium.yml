@@ -25,8 +25,7 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest --alluredir=./allure-results --browser=chrome
-        pytest --alluredir=./allure-results --browser=firefox
+        pytest --alluredir=./allure-results  # Aquí puedes especificar solo un navegador si así lo deseas
 
     - name: Generate Allure report
       run: |

@@ -101,26 +101,28 @@ jobs:
         run: |
           docker run -d -p 5000:5000 palbertt/automatizacion:api2-v1.0.0
 
+
+
 # CI/CD Pipeline
 
-Este repositorio utiliza un pipeline de CI/CD configurado con **GitHub Actions** para automatizar la construcción y despliegue de la aplicación. A continuación, se describe la configuración y los pasos involucrados en el pipeline.
+   Este repositorio utiliza un pipeline de CI/CD configurado con **GitHub Actions** para automatizar la construcción y despliegue de la aplicación. A continuación, se describe la configuración y los pasos involucrados en el pipeline.
 
 ## Descripción General
 
-El pipeline se activa en cada `push` a la rama `ApisFunciones` y realiza las siguientes acciones:
+   El pipeline se activa en cada `push` a la rama `ApisFunciones` y realiza las siguientes acciones:
 
-1. **Clona el repositorio actual.**
-2. **Configura el entorno de Python.**
-3. **Instala las dependencias del proyecto.**
-4. **Configura Docker Buildx.**
-5. **Almacena en caché las capas de Docker** para optimizar el tiempo de construcción.
-6. **Inicia sesión en Docker Hub.**
-7. **Construye y sube la imagen Docker.**
-8. **Despliega el contenedor Docker.**
+   1. **Clona el repositorio actual.**
+   2. **Configura el entorno de Python.**
+   3. **Instala las dependencias del proyecto.**
+   4. **Configura Docker Buildx.**
+   5. **Almacena en caché las capas de Docker** para optimizar el tiempo de construcción.
+   6. **Inicia sesión en Docker Hub.**
+   7. **Construye y sube la imagen Docker.**
+   8. **Despliega el contenedor Docker.**
 
 ## Configuración del Pipeline
 
-El pipeline está configurado en el archivo `.github/workflows/ci-cd-pipeline.yml`. A continuación se detalla la estructura del archivo:
+   El pipeline está configurado en el archivo `.github/workflows/ci-cd-pipeline.yml`. A continuación se detalla la estructura del archivo:
 
 ```yaml
 name: CI/CD Pipeline

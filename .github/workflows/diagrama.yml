@@ -38,16 +38,12 @@ jobs:
           chmod +x terravision
           export PATH=$PATH:$(pwd)
 
-      - name: Disable AWS and MongoDB Providers
+      - name: Remove AWS and MongoDB Resources
         run: |
           cd terraform_repo
-          # Comentar proveedores de AWS y MongoDB
-          find . -type f -name "*.tf" -exec sed -i '/provider "aws" {/,/}/ s/^/#/' {} \;
-          find . -type f -name "*.tf" -exec sed -i '/provider "mongodbatlas" {/,/}/ s/^/#/' {} \;
-          
-          # Comentar todos los recursos que comiencen con aws_ o mongodbatlas_
-          find . -type f -name "*.tf" -exec sed -i '/resource "aws_.*" {/,/}/ s/^/#/' {} \;
-          find . -type f -name "*.tf" -exec sed -i '/resource "mongodbatlas_.*" {/,/}/ s/^/#/' {} \;
+          # Mover archivos con recursos de AWS y MongoDB Atlas a una carpeta temporal
+          mkdir -p ../backup_resources
+          find . -type f -name "*.tf" -exec grep -l -E 'provider "(aws|mongodbatlas)"|resource "(aws|mongodbatlas)' {} \; -exec mv {} ../backup_resources/ \;
 
       - name: Generate Terraform Plan
         run: |

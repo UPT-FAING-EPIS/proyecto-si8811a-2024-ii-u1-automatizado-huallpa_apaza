@@ -37,6 +37,21 @@ jobs:
           cd terravision
           chmod +x terravision
           export PATH=$PATH:$(pwd)
+          
+      - name: Disable AWS Provider and Related MongoDB Configurations
+        run: |
+          cd terraform_repo
+          sed -i '/provider "aws"/,/}/ s/^/#/' main.tf
+          # Comentar recursos relacionados con AWS en módulos
+          find . -type f -name "*.tf" -exec sed -i '/resource "aws_/ s/^/#/' {} +
+          # Comentar módulos que dependan de AWS
+          sed -i '/module "docker_host"/,/}/ s/^/#/' main.tf
+          sed -i '/module "mobile_app"/,/}/ s/^/#/' main.tf
+          sed -i '/module "web_app"/,/}/ s/^/#/' main.tf
+          # Comentar bloques problemáticos en mongodb/mongodbatlas
+          find modules/mongodb -type f -name "*.tf" -exec sed -i '/replication_specs/,/}/ s/^/#/' {} +
+          find modules/mongodb -type f -name "*.tf" -exec sed -i '/advanced_configuration/,/}/ s/^/#/' {} +
+          find modules/mongodb -type f -name "*.tf" -exec sed -i '/bi_connector_config/,/}/ s/^/#/' {} +
 
       - name: Disable AWS Provider and Related Modules
         run: |

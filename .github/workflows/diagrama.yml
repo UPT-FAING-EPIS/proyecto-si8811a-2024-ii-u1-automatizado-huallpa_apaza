@@ -31,9 +31,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y graphviz python3-pip
 
-      - name: Install Python Graphviz Module
+      - name: Install Python Modules
         run: |
-          pip3 install graphviz
+          pip3 install graphviz numpy
 
       - name: Clone Terravision Repository
         run: |

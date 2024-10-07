@@ -42,13 +42,12 @@ jobs:
         run: |
           cd terraform_repo
           # Comentar proveedores de AWS y MongoDB
-          find . -type f -name "*.tf" -exec sed -i '/provider "aws"/,/}/ s/^/#/' {} \;
-          find . -type f -name "*.tf" -exec sed -i '/provider "mongodbatlas"/,/}/ s/^/#/' {} \;
+          find . -type f -name "*.tf" -exec sed -i '/provider "aws" {/,/}/ s/^/#/' {} \;
+          find . -type f -name "*.tf" -exec sed -i '/provider "mongodbatlas" {/,/}/ s/^/#/' {} \;
           
           # Comentar todos los recursos que comiencen con aws_ o mongodbatlas_
-          find . -type f -name "*.tf" -exec sed -i '/resource "aws_/,/}/ s/^/#/' {} \;
-          find . -type f -name "*.tf" -exec sed -i '/resource "mongodbatlas_/,/}/ s/^/#/' {} \;
-
+          find . -type f -name "*.tf" -exec sed -i '/resource "aws_.*" {/,/}/ s/^/#/' {} \;
+          find . -type f -name "*.tf" -exec sed -i '/resource "mongodbatlas_.*" {/,/}/ s/^/#/' {} \;
 
       - name: Generate Terraform Plan
         run: |
@@ -70,7 +69,6 @@ jobs:
             -var="react_app_bucket_name=nombre_react_app_bucket" \
             -var="ec2_key_name=nombre_de_tu_clave"
           terraform show -json tfplan > tfplan.json
-
 
       - name: Run Terravision to Generate Diagram
         run: |

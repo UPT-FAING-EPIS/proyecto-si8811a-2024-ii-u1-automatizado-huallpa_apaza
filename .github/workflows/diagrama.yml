@@ -41,10 +41,12 @@ jobs:
       - name: Generate Terraform Plan
         run: |
           cd terraform_repo
+          # Deshabilitar proveedor de AWS para evitar errores de credenciales
+          sed -i 's/provider "aws"/# provider "aws"/' *.tf
+          sed -i 's/resource "aws/# resource "aws/' *.tf
           terraform init
           terraform plan -out=tfplan \
             -var="api_gateway_name=nombre_api_gateway" \
-            -var="ec2_key_name=nombre_ec2_key" \
             -var="flutter_app_bucket_name=nombre_flutter_app_bucket" \
             -var="grafana_cloud_api_key=tu_grafana_api_key" \
             -var="mongodb_atlas_org_id=tu_org_id" \
@@ -112,7 +114,6 @@ jobs:
           echo -e "$tf_files" >> README.md
           
           echo "## Recursos Utilizados" >> README.md
-          echo "- EC2" >> README.md
           echo "- MongoDB" >> README.md
           echo "- Grafana" >> README.md
           echo "- Aplicaciones Web y Móviles" >> README.md

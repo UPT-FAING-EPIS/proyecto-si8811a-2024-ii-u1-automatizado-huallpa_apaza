@@ -38,12 +38,14 @@ jobs:
           chmod +x terravision
           export PATH=$PATH:$(pwd)
 
+      - name: Disable AWS Provider
+        run: |
+          cd terraform_repo
+          sed -i '/provider "aws"/,/}/ s/^/#/' main.tf
+
       - name: Generate Terraform Plan
         run: |
           cd terraform_repo
-          # Deshabilitar proveedor de AWS para evitar errores de credenciales
-          sed -i 's/provider "aws"/# provider "aws"/' *.tf
-          sed -i 's/resource "aws/# resource "aws/' *.tf
           terraform init
           terraform plan -out=tfplan \
             -var="api_gateway_name=nombre_api_gateway" \

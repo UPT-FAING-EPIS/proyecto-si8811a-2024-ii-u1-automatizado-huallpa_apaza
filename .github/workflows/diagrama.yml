@@ -59,9 +59,10 @@ jobs:
             -var="mongodb_password=tu_mongodb_password" \
             -var="mongodb_project_name=nombre_mongodb_project" \
             -var="mongodb_username=tu_mongodb_username" \
-            -var="react_app_bucket_name=nombre_react_app_bucket"
+            -var="react_app_bucket_name=nombre_react_app_bucket" \
             -var="ec2_key_name=nombre_de_tu_clave"
           terraform show -json tfplan > tfplan.json
+
 
       - name: Run Terravision to Generate Diagram
         run: |

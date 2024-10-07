@@ -49,6 +49,7 @@ jobs:
           terraform init
           terraform plan -out=tfplan \
             -var="api_gateway_name=nombre_api_gateway" \
+            -var="ec2_key_name=nombre_ec2_key" \
             -var="flutter_app_bucket_name=nombre_flutter_app_bucket" \
             -var="grafana_cloud_api_key=tu_grafana_api_key" \
             -var="mongodb_atlas_org_id=tu_org_id" \

@@ -41,15 +41,20 @@ jobs:
       - name: Disable AWS and MongoDB Providers
         run: |
           cd terraform_repo
-          sed -i '/provider "aws"/,/}/ s/^/#/' main.tf
-          sed -i '/provider "mongodbatlas"/,/}/ s/^/#/' main.tf
-          sed -i '/resource "aws_/,/}/ s/^/#/' *.tf
-          sed -i '/resource "mongodbatlas_/,/}/ s/^/#/' *.tf
+          # Comentar proveedores de AWS y MongoDB
+          find . -type f -name "*.tf" -exec sed -i '/provider "aws"/,/}/ s/^/#/' {} \;
+          find . -type f -name "*.tf" -exec sed -i '/provider "mongodbatlas"/,/}/ s/^/#/' {} \;
+          
+          # Comentar todos los recursos que comiencen con aws_ o mongodbatlas_
+          find . -type f -name "*.tf" -exec sed -i '/resource "aws_/,/}/ s/^/#/' {} \;
+          find . -type f -name "*.tf" -exec sed -i '/resource "mongodbatlas_/,/}/ s/^/#/' {} \;
+
 
       - name: Generate Terraform Plan
         run: |
           cd terraform_repo
           terraform init
+          terraform validate
           terraform plan -out=tfplan \
             -var="api_gateway_name=nombre_api_gateway" \
             -var="flutter_app_bucket_name=nombre_flutter_app_bucket" \

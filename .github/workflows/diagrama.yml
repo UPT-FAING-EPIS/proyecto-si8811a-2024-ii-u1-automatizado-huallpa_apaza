@@ -38,10 +38,11 @@ jobs:
           chmod +x terravision
           export PATH=$PATH:$(pwd)
 
-      - name: Disable AWS Provider
+      - name: Disable AWS Resources and Provider
         run: |
           cd terraform_repo
           sed -i '/provider "aws"/,/}/ s/^/#/' main.tf
+          find . -type f -name "*.tf" -exec sed -i '/resource "aws_/ s/^/#/' {} +
 
       - name: Generate Terraform Plan
         run: |

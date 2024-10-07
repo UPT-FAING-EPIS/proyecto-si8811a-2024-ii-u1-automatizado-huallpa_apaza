@@ -42,6 +42,7 @@ jobs:
         run: |
           cd terraform_repo
           sed -i '/provider "aws"/,/}/ s/^/#/' main.tf
+          sed -i '/resource "aws_/,/}/ s/^/#/' *.tf
 
       - name: Generate Terraform Plan
         run: |

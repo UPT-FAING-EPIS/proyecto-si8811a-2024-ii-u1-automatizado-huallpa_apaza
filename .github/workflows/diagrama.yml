@@ -25,34 +25,48 @@ jobs:
           curl -LO https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
           unzip terraform_1.0.0_linux_amd64.zip
           sudo mv terraform /usr/local/bin/
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz python3-pip
+          pip3 install -r terraform_repo/requirements.txt
+
+      - name: Clone Terravision Repository
+        run: |
+          git clone https://github.com/patrickchugh/terravision.git
+          cd terravision
+          chmod +x terravision
+          export PATH=$PATH:$(pwd)
+
+      - name: Generate Terraform Plan
+        run: |
+          cd terraform_repo
+          terraform init
+          terraform plan -out=tfplan
+          terraform show -json tfplan > tfplan.json
+
+      - name: Run Terravision to Generate Diagram
+        run: |
+          cd terravision
+          ./terravision draw --source ../terraform_repo --output diagram.png
+          mv diagram.png ../
+
       - name: Generate README.md
         run: |
           echo "# DIAGRAMAS " > README.md
           echo "" >> README.md
           echo "En esta rama se generan los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop, la rama donde están los archivos TF." >> README.md
           echo "" >> README.md
-          
-          # Primer Diagrama: Diagrama de Infraestructura
+
+          # Añade el diagrama al README.md
           echo "## Diagrama de Infraestructura" >> README.md
-          echo '```mermaid' >> README.md
-          echo "graph TD;" >> README.md
-          
-          # Inicializar variable para almacenar la lista de archivos .tf
-          tf_files=""
-          # Analizar los archivos .tf en el repositorio clonado
-          for file in $(find terraform_repo -name "*.tf"); do
-            echo "Analizando $file"
-            tf_files="$tf_files\n- $file"
-            grep 'resource "' $file | awk -F '"' '{print $2}' | while read resource; do
-              echo "    $resource --> AWS" >> README.md
-            done
-          done
-          
-          echo '```' >> README.md
+          echo "![Diagrama de Infraestructura](diagram.png)" >> README.md
           echo "" >> README.md
+
+          # Añade la estructura de archivos y lista de recursos como antes
           
-          # Segundo Diagrama: Estructura de Archivos
-          echo "## Diagrama de Estructura de Archivos" >> README.md
+          echo "## Estructura de Archivos" >> README.md
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
           
@@ -71,35 +85,31 @@ jobs:
           find terraform_repo -type f | while read file; do
             file_name=$(basename "$file")
             dir_name=$(dirname "$file" | xargs basename)
-            
-            # Evitar el uso de comillas en los nombres de archivo
-            if [[ "$file_name" == "graph.dot" ]]; then
-              echo "    $dir_name --> graph_dot" >> README.md
-            else
-              echo "    $dir_name --> $file_name" >> README.md
-            fi
+            echo "    $dir_name --> $file_name" >> README.md
           done
           
           echo '```' >> README.md
           echo "" >> README.md
-
-
           
-          # Añadir la lista de archivos .tf que fueron analizados
+          # Lista de archivos .tf y recursos
           echo "## Archivos Terraform Analizados" >> README.md
+          tf_files=""
+          for file in $(find terraform_repo -name "*.tf"); do
+            tf_files="$tf_files\n- $file"
+          done
           echo -e "$tf_files" >> README.md
           
-          echo "" >> README.md
           echo "## Recursos Utilizados" >> README.md
           echo "- EC2" >> README.md
           echo "- MongoDB" >> README.md
           echo "- Grafana" >> README.md
           echo "- Aplicaciones Web y Móviles" >> README.md
           echo "- API Backend" >> README.md
+
       - name: Commit and Push README.md
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add README.md
-          git commit -m "Generar README.md automáticamente" || echo "No hay cambios para commit"
+          git add README.md diagram.png
+          git commit -m "Generar README.md y diagrama automáticamente" || echo "No hay cambios para commit"
           git push origin DesarrolloApiBack

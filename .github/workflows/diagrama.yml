@@ -30,8 +30,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y graphviz python3-pip
-          # Instalar dependencias comunes si es necesario
-          pip3 install requests pyyaml
 
       - name: Clone Terravision Repository
         run: |
@@ -44,7 +42,20 @@ jobs:
         run: |
           cd terraform_repo
           terraform init
-          terraform plan -out=tfplan
+          terraform plan -out=tfplan \
+            -var="api_gateway_name=nombre_api_gateway" \
+            -var="ec2_key_name=nombre_ec2_key" \
+            -var="flutter_app_bucket_name=nombre_flutter_app_bucket" \
+            -var="grafana_cloud_api_key=tu_grafana_api_key" \
+            -var="mongodb_atlas_org_id=tu_org_id" \
+            -var="mongodb_atlas_private_key=tu_mongodb_private_key" \
+            -var="mongodb_atlas_public_key=tu_mongodb_public_key" \
+            -var="mongodb_cluster_name=nombre_mongodb_cluster" \
+            -var="mongodb_database_name=nombre_mongodb_database" \
+            -var="mongodb_password=tu_mongodb_password" \
+            -var="mongodb_project_name=nombre_mongodb_project" \
+            -var="mongodb_username=tu_mongodb_username" \
+            -var="react_app_bucket_name=nombre_react_app_bucket"
           terraform show -json tfplan > tfplan.json
 
       - name: Run Terravision to Generate Diagram

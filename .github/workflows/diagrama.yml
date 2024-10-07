@@ -33,7 +33,7 @@ jobs:
 
       - name: Install Python Modules
         run: |
-          pip3 install graphviz numpy==1.21.0 GitPython
+          pip3 install graphviz numpy==1.21.0 GitPython tqdm
 
       - name: Clone Terravision Repository
         run: |

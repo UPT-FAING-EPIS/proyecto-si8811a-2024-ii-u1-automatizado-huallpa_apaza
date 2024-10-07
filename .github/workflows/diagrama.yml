@@ -38,11 +38,13 @@ jobs:
           chmod +x terravision
           export PATH=$PATH:$(pwd)
 
-      - name: Disable AWS Provider
+      - name: Disable AWS and MongoDB Providers
         run: |
           cd terraform_repo
           sed -i '/provider "aws"/,/}/ s/^/#/' main.tf
+          sed -i '/provider "mongodbatlas"/,/}/ s/^/#/' main.tf
           sed -i '/resource "aws_/,/}/ s/^/#/' *.tf
+          sed -i '/resource "mongodbatlas_/,/}/ s/^/#/' *.tf
 
       - name: Generate Terraform Plan
         run: |

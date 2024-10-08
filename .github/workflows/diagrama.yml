@@ -73,9 +73,8 @@ jobs:
       - name: Run Terravision to Generate Diagram
         run: |
           cd terravision
-          ./terravision draw --source ../terraform_repo --output-format png --output-path ../diagram.png
-          mv ../diagram.png .
-
+          ./terravision draw --source ../terraform_repo
+          mv output.png ../diagram.png || mv diagram.png ../diagram.png || echo "El archivo no se generó como se esperaba"
 
       - name: Generate README.md
         run: |

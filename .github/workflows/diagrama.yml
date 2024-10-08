@@ -49,7 +49,7 @@ jobs:
           mkdir -p ../backup_resources
           find . -type f -name "*.tf" -exec grep -l -E 'provider "(aws|mongodbatlas)"|resource "(aws|mongodbatlas)' {} \; -exec mv {} ../backup_resources/ \;
 
-      - name: Generate Terraform Plan
+            - name: Generate Terraform Plan
         run: |
           cd terraform_repo
           terraform init
@@ -69,6 +69,7 @@ jobs:
             -var="react_app_bucket_name=nombre_react_app_bucket" \
             -var="ec2_key_name=nombre_de_tu_clave"
           terraform show -json tfplan > tfplan.json
+
 
       - name: Run Terravision to Generate Diagram
         run: |

@@ -76,6 +76,11 @@ jobs:
           cd terravision
           ./terravision draw --source ../terraform_repo
           mv output.png ../diagram.png || mv diagram.png ../diagram.png || echo "El archivo no se generó como se esperaba"
+          # Comprueba si se generó el archivo
+          if [ ! -f "../diagram.png" ]; then
+            echo "Error: El archivo diagram.png no se generó correctamente."
+            exit 1
+          fi
 
       - name: Generate README.md
         run: |

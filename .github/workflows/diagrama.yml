@@ -130,15 +130,22 @@ jobs:
           echo "- Aplicaciones Web y Móviles" >> README.md
           echo "- API Backend" >> README.md
 
-      - name: Commit and Push README.md
+      - name: Commit and Push README.md y diagram.png
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
+          
+          # Verifica si el archivo diagram.png existe
           if [ -f "diagram.png" ]; then
+            # Añade README.md y diagram.png al commit
             git add README.md diagram.png
+            echo "Añadiendo README.md y diagram.png al commit"
           else
-            echo "El archivo diagram.png no se generó"
-            git add README.md
+            # Imprime un mensaje de error y no realiza el commit si diagram.png no se generó
+            echo "Error: diagram.png no se generó, no se realizará el commit"
+            exit 1
           fi
+          
+          # Realiza el commit
           git commit -m "Generar README.md y diagrama automáticamente" || echo "No hay cambios para commit"
           git push origin DesarrolloApiBack

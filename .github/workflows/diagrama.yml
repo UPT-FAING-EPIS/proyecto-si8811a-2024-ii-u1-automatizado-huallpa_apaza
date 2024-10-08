@@ -48,27 +48,31 @@ jobs:
           # Mover archivos con recursos de AWS y MongoDB Atlas a una carpeta temporal
           mkdir -p ../backup_resources
           find . -type f -name "*.tf" -exec grep -l -E 'provider "(aws|mongodbatlas)"|resource "(aws|mongodbatlas)' {} \; -exec mv {} ../backup_resources/ \;
-
+# Aquí agregamos la creación del archivo temporal de variables
+      - name: Create Temporary tfvars
+        run: |
+          echo 'api_gateway_name = "sample_api_gateway"' > terraform_repo/temp.tfvars
+          echo 'flutter_app_bucket_name = "sample_flutter_app_bucket"' >> terraform_repo/temp.tfvars
+          echo 'grafana_cloud_api_key = "sample_grafana_key"' >> terraform_repo/temp.tfvars
+          echo 'mongodb_atlas_org_id = "sample_org_id"' >> terraform_repo/temp.tfvars
+          echo 'mongodb_atlas_private_key = "sample_private_key"' >> terraform_repo/temp.tfvars
+          echo 'mongodb_atlas_public_key = "sample_public_key"' >> terraform_repo/temp.tfvars
+          echo 'mongodb_cluster_name = "sample_cluster_name"' >> terraform_repo/temp.tfvars
+          echo 'mongodb_database_name = "sample_database_name"' >> terraform_repo/temp.tfvars
+          echo 'mongodb_password = "sample_password"' >> terraform_repo/temp.tfvars
+          echo 'mongodb_project_name = "sample_project_name"' >> terraform_repo/temp.tfvars
+          echo 'mongodb_username = "sample_username"' >> terraform_repo/temp.tfvars
+          echo 'react_app_bucket_name = "sample_react_app_bucket"' >> terraform_repo/temp.tfvars
+          echo 'ec2_key_name = "sample_key_name"' >> terraform_repo/temp.tfvars
+          
       - name: Generate Terraform Plan
         run: |
           cd terraform_repo
-           terraform init
-           terraform validate
-           terraform plan -out=tfplan \
-             -var="api_gateway_name=testing_gateway" \
-             -var="flutter_app_bucket_name=testing_flutter_bucket" \
-             -var="grafana_cloud_api_key=testing_grafana_key" \
-             -var="mongodb_atlas_org_id=testing_org_id" \
-             -var="mongodb_atlas_private_key=testing_private_key" \
-             -var="mongodb_atlas_public_key=testing_public_key" \
-             -var="mongodb_cluster_name=testing_cluster_name" \
-             -var="mongodb_database_name=testing_database" \
-             -var="mongodb_password=testing_password" \
-             -var="mongodb_project_name=testing_project" \
-             -var="mongodb_username=testing_username" \
-             -var="react_app_bucket_name=testing_react_bucket" \
-             -var="ec2_key_name=testing_ec2_key"
-           terraform show -json tfplan > tfplan.json
+          terraform init
+          terraform validate
+          terraform plan -out=tfplan -var-file="temp.tfvars"
+          terraform show -json tfplan > tfplan.json
+
 
 
       - name: Run Terravision to Generate Diagram

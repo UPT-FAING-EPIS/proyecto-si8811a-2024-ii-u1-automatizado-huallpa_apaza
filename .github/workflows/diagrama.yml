@@ -52,23 +52,23 @@ jobs:
       - name: Generate Terraform Plan
         run: |
           cd terraform_repo
-          terraform init
-          terraform validate
-          terraform plan -out=tfplan \
-            -var="api_gateway_name=nombre_api_gateway" \
-            -var="flutter_app_bucket_name=nombre_flutter_app_bucket" \
-            -var="grafana_cloud_api_key=tu_grafana_api_key" \
-            -var="mongodb_atlas_org_id=tu_org_id" \
-            -var="mongodb_atlas_private_key=tu_mongodb_private_key" \
-            -var="mongodb_atlas_public_key=tu_mongodb_public_key" \
-            -var="mongodb_cluster_name=nombre_mongodb_cluster" \
-            -var="mongodb_database_name=nombre_mongodb_database" \
-            -var="mongodb_password=tu_mongodb_password" \
-            -var="mongodb_project_name=nombre_mongodb_project" \
-            -var="mongodb_username=tu_mongodb_username" \
-            -var="react_app_bucket_name=nombre_react_app_bucket" \
-            -var="ec2_key_name=nombre_de_tu_clave"
-          terraform show -json tfplan > tfplan.json
+           terraform init
+           terraform validate
+           terraform plan -out=tfplan \
+             -var="api_gateway_name=testing_gateway" \
+             -var="flutter_app_bucket_name=testing_flutter_bucket" \
+             -var="grafana_cloud_api_key=testing_grafana_key" \
+             -var="mongodb_atlas_org_id=testing_org_id" \
+             -var="mongodb_atlas_private_key=testing_private_key" \
+             -var="mongodb_atlas_public_key=testing_public_key" \
+             -var="mongodb_cluster_name=testing_cluster_name" \
+             -var="mongodb_database_name=testing_database" \
+             -var="mongodb_password=testing_password" \
+             -var="mongodb_project_name=testing_project" \
+             -var="mongodb_username=testing_username" \
+             -var="react_app_bucket_name=testing_react_bucket" \
+             -var="ec2_key_name=testing_ec2_key"
+           terraform show -json tfplan > tfplan.json
 
 
       - name: Run Terravision to Generate Diagram

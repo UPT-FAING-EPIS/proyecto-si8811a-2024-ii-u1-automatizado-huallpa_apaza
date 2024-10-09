@@ -26,7 +26,10 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y graphviz
-          # Install any other dependencies needed here
+          # Install Node.js and npm
+          sudo apt install -y nodejs npm
+          # Install terraform-visual globally
+          sudo npm install -g terraform-visual
 
       - name: Generate PNG Diagrams
         run: |
@@ -55,19 +58,8 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y graphviz
-
-      - name: Clone Terraform Visual Repository
-        run: |
-          git clone https://github.com/yourusername/terraform-visual.git
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install Terraform Visual
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y graphviz
-          git clone https://github.com/mahmoudshakir/terraform-visual.git
-          cd terraform-visual
-          # Make sure Terraform Visual can run
-          sudo make install  # Or the command that is needed
+          # Install Node.js and npm
+          sudo apt install -y nodejs npm
+          # Install terraform-visual globally
+          sudo npm install -g terraform-visual
 

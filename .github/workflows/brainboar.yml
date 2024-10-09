@@ -28,8 +28,8 @@ jobs:
           sudo apt install -y graphviz
           # Install Node.js and npm
           sudo apt install -y nodejs npm
-          # Attempt to install terraform-visual from GitHub if not in npm registry
-          sudo npm install -g <git_url> || echo "terraform-visual not found in npm registry. Please check the package name."
+          # Install terraform-visual globally
+          sudo npm install -g terraform-visual
 
       - name: Generate PNG Diagrams
         run: |

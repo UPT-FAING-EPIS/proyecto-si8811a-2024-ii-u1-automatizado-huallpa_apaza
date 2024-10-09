@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - DesarrolloApiBack
+      - main
 
 jobs:
   generate-diagrams:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/DesarrolloApiBack'  # Only run this job on DesarrolloApiBack
 
     steps:
       - name: Checkout the main repository
@@ -24,23 +26,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y graphviz
-          sudo apt install -y make  # Ensure make is installed for building
           # Install any other dependencies needed here
-
-      - name: Clone and Install Terraform Visual
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
-        run: |
-          git clone https://$GITHUB_TOKEN@github.com/mahmoudshakir/terraform-visual.git
-          cd terraform-visual
-          sudo make install  # Ensure this completes successfully
-
-      - name: Check terraform-visual Installation
-        run: |
-          if ! command -v terraform-visual &> /dev/null; then
-              echo "terraform-visual could not be found"
-              exit 1
-          fi
 
       - name: Generate PNG Diagrams
         run: |
@@ -53,7 +39,35 @@ jobs:
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add *.png  # Adjust the pattern if needed
+          git add *.png  # Ensure the generated images are in the root or adjust the pattern
           git commit -m "Automatically generate infrastructure diagrams" || echo "No changes to commit"
           git push origin DesarrolloApiBack
+
+  install:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Only run this job on main
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y graphviz
+
+      - name: Clone Terraform Visual Repository
+        run: |
+          git clone https://github.com/yourusername/terraform-visual.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Terraform Visual
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+          git clone https://github.com/mahmoudshakir/terraform-visual.git
+          cd terraform-visual
+          # Make sure Terraform Visual can run
+          sudo make install  # Or the command that is needed
 

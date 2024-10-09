@@ -64,11 +64,7 @@ jobs:
              -var="react_app_bucket_name=testing_react_bucket" \
              -var="ec2_key_name=testing_ec2_key"
            terraform show -json tfplan > tfplan.json
-      - name: Run Terravision to Generate Diagram
-        run: |
-          cd terravision
-          ./terravision draw --source ../terraform_repo
-          mv output.png ../diagram.png || mv diagram.png ../diagram.png || echo "El archivo no se generó como se esperaba"
+
       - name: Generate README.md
         run: |
           echo "# DIAGRAMAS " > README.md

@@ -22,26 +22,39 @@ jobs:
           path: terraform_repo
           ref: develop
 
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Specify the correct version
+
       - name: Install Dependencies
         run: |
           sudo apt update
           sudo apt install -y graphviz
           # Install Node.js and npm
           sudo apt install -y nodejs npm
+          # Update npm to the latest version
+          sudo npm install -g npm@latest
           # Install terraform-visual globally
-          sudo npm install -g terraform-visual
+          sudo npm install -g terraform-visual --verbose
 
       - name: Generate PNG Diagrams
         run: |
-          find terraform_repo -name "main.tf" -exec sh -c 'terraform-visual -f "$0" -o "${0%.tf}.png"' {} \;
+          for tf_file in $(find terraform_repo -name "main.tf"); do
+              echo "Generating diagram for $tf_file"
+              terraform-visual -f "$tf_file" -o "${tf_file%.tf}.png"
+          done
 
       - name: Commit and Push Diagrams
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add terraform_repo/*.png  # Adjust the path based on your structure
-          git commit -m "Automatically generate infrastructure diagrams" || echo "No changes to commit"
-          git push origin DesarrolloApiBack
+          git add *.png  # Ensure the generated images are in the root or adjust the pattern
+          if git commit -m "Automatically generate infrastructure diagrams"; then
+            git push origin DesarrolloApiBack
+          else
+            echo "No changes to commit"
+          fi
 
   install:
     runs-on: ubuntu-latest
@@ -57,6 +70,7 @@ jobs:
           sudo apt install -y graphviz
           # Install Node.js and npm
           sudo apt install -y nodejs npm
-          # Attempt to install terraform-visual from GitHub if not in npm registry
-          sudo npm install -g <git_url> || echo "terraform-visual not found in npm registry. Please check the package name."
-
+          # Update npm to the latest version
+          sudo npm install -g npm@latest
+          # Install terraform-visual globally
+          sudo npm install -g terraform-visual --verbose

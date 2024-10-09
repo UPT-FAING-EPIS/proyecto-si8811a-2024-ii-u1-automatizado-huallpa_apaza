@@ -1,4 +1,4 @@
-name: Generate README.md
+name: Generate Infrastructure Diagrams
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - DesarrolloApiBack
 
 jobs:
-  generate-readme:
+  generate-diagrams:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,67 +17,33 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
-          path: terraform_repo  # Directorio donde se clonará el repo
-          ref: develop  # Rama donde están los archivos TF
+          path: terraform_repo
+          ref: develop
 
-      - name: Install Terraform
+      - name: Install Terraform Visual
         run: |
-          curl -LO https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
-          unzip terraform_1.0.0_linux_amd64.zip
-          sudo mv terraform /usr/local/bin/
+          # Instala cualquier dependencia que necesites para Terraform Visual
+          sudo apt-get update
+          sudo apt-get install -y graphviz
 
-      - name: Install Brainboard CLI
-        run: |
-          curl -Lo brainboard-cli.zip https://cli.brainboard.co/brainboard-cli.zip
-          unzip brainboard-cli.zip
-          sudo mv brainboard /usr/local/bin/
+          # Aquí puedes clonar o instalar Terraform Visual si es necesario.
+          git clone https://github.com/mahmoudshakir/terraform-visual.git
+          cd terraform-visual
+          # Asegúrate de que Terraform Visual se pueda ejecutar
+          sudo make install # O el comando que se necesite
 
-      - name: Generate Infrastructure Diagrams
+      - name: Generate PNG Diagrams
         run: |
-          mkdir -p terraform_repo/diagrams  # Crear directorio para diagramas
-          for file in $(find terraform_repo -name "main.tf"); do
-            # Obtener el nombre del archivo sin la ruta
-            file_name=$(basename "$file" .tf)
-            # Generar diagrama para cada main.tf
-            brainboard generate --project <nombre_del_proyecto> --output terraform_repo/diagrams/${file_name}.png --input "$file"
+          for tf_file in $(find terraform_repo -name "main.tf"); do
+              echo "Generando diagrama para $tf_file"
+              terraform-visual -f "$tf_file" -o "${tf_file%.tf}.png"
           done
 
-      - name: Generate README.md
-        run: |
-          echo "# DIAGRAMAS " > README.md
-          echo "" >> README.md
-          echo "En esta rama se generan los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop, la rama donde están los archivos TF." >> README.md
-          echo "" >> README.md
-          
-          # Incluir cada diagrama generado
-          for file in $(find terraform_repo/diagrams -name "*.png"); do
-            echo "## Diagrama de Infraestructura para $(basename "$file" .png)" >> README.md
-            echo "![Diagrama de Infraestructura](./$file)" >> README.md
-            echo "" >> README.md
-          done
-
-          # Analizar archivos .tf y otros detalles
-          tf_files=""
-          for file in $(find terraform_repo -name "*.tf"); do
-            tf_files="$tf_files\n- $file"
-          done
-
-          echo "## Archivos Terraform Analizados" >> README.md
-          echo -e "$tf_files" >> README.md
-          
-          echo "" >> README.md
-          echo "## Recursos Utilizados" >> README.md
-          echo "- EC2" >> README.md
-          echo "- MongoDB" >> README.md
-          echo "- Grafana" >> README.md
-          echo "- Aplicaciones Web y Móviles" >> README.md
-          echo "- API Backend" >> README.md
-
-      - name: Commit and Push README.md
+      - name: Commit and Push Diagrams
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add README.md
-          git commit -m "Generar README.md automáticamente" || echo "No hay cambios para commit"
+          git add *.png  # Asegúrate de que las imágenes generadas estén en la raíz o ajusta el patrón
+          git commit -m "Generar diagramas de infraestructura automáticamente" || echo "No hay cambios para commit"
           git push origin DesarrolloApiBack
 

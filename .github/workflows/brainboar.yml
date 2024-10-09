@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - DesarrolloApiBack
+      - main
 
 jobs:
   generate-diagrams:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/DesarrolloApiBack'  # Only run this job on DesarrolloApiBack
 
     steps:
       - name: Checkout the main repository
@@ -19,16 +21,31 @@ jobs:
           repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
           path: terraform_repo
           ref: develop
-name: Install Dependencies and Clone Repo
 
-on:
-  push:
-    branches:
-      - main
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y graphviz
+          # Install any other dependencies needed here
 
-jobs:
+      - name: Generate PNG Diagrams
+        run: |
+          for tf_file in $(find terraform_repo -name "main.tf"); do
+              echo "Generating diagram for $tf_file"
+              terraform-visual -f "$tf_file" -o "${tf_file%.tf}.png"
+          done
+
+      - name: Commit and Push Diagrams
+        run: |
+          git config --local user.name "jesus huallpa"
+          git config --local user.email "jh2021071085@virtual.upt.pe"
+          git add *.png  # Ensure the generated images are in the root or adjust the pattern
+          git commit -m "Automatically generate infrastructure diagrams" || echo "No changes to commit"
+          git push origin DesarrolloApiBack
+
   install:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Only run this job on main
 
     steps:
       - name: Checkout Code
@@ -38,7 +55,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y graphviz
-          # Instala cualquier otra dependencia necesaria aquí
 
       - name: Clone Terraform Visual Repository
         run: |
@@ -46,31 +62,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
       - name: Install Terraform Visual
         run: |
-          # Instala cualquier dependencia que necesites para Terraform Visual
           sudo apt-get update
           sudo apt-get install -y graphviz
-
-          # Aquí puedes clonar o instalar Terraform Visual si es necesario.
           git clone https://github.com/mahmoudshakir/terraform-visual.git
           cd terraform-visual
-          # Asegúrate de que Terraform Visual se pueda ejecutar
-          sudo make install # O el comando que se necesite
-
-      - name: Generate PNG Diagrams
-        run: |
-          for tf_file in $(find terraform_repo -name "main.tf"); do
-              echo "Generando diagrama para $tf_file"
-              terraform-visual -f "$tf_file" -o "${tf_file%.tf}.png"
-          done
-
-      - name: Commit and Push Diagrams
-        run: |
-          git config --local user.name "jesus huallpa"
-          git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add *.png  # Asegúrate de que las imágenes generadas estén en la raíz o ajusta el patrón
-          git commit -m "Generar diagramas de infraestructura automáticamente" || echo "No hay cambios para commit"
-          git push origin DesarrolloApiBack
+          # Make sure Terraform Visual can run
+          sudo make install  # Or the command that is needed
 

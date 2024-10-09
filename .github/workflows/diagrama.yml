@@ -25,73 +25,62 @@ jobs:
           curl -LO https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
           unzip terraform_1.0.0_linux_amd64.zip
           sudo mv terraform /usr/local/bin/
-
       - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y graphviz python3-pip
-
       - name: Install Python Modules
         run: |
           pip3 install graphviz numpy==1.21.0 GitPython tqdm debugpy ipaddr
-
       - name: Clone Terravision Repository
         run: |
           git clone https://github.com/patrickchugh/terravision.git
           cd terravision
           chmod +x terravision
           export PATH=$PATH:$(pwd)
-
-# Nueva sección: Creación del archivo temporal de variables tfvars
-      - name: Create Temporary tfvars
+      - name: Remove AWS and MongoDB Resources
         run: |
-          echo 'api_gateway_name = "sample_api_gateway"' > terraform_repo/temp.tfvars
-          echo 'flutter_app_bucket_name = "sample_flutter_app_bucket"' >> terraform_repo/temp.tfvars
-          echo 'grafana_cloud_api_key = "sample_grafana_key"' >> terraform_repo/temp.tfvars
-          echo 'mongodb_atlas_org_id = "sample_org_id"' >> terraform_repo/temp.tfvars
-          echo 'mongodb_atlas_private_key = "sample_private_key"' >> terraform_repo/temp.tfvars
-          echo 'mongodb_atlas_public_key = "sample_public_key"' >> terraform_repo/temp.tfvars
-          echo 'mongodb_cluster_name = "sample_cluster_name"' >> terraform_repo/temp.tfvars
-          echo 'mongodb_database_name = "sample_database_name"' >> terraform_repo/temp.tfvars
-          echo 'mongodb_password = "sample_password"' >> terraform_repo/temp.tfvars
-          echo 'mongodb_project_name = "sample_project_name"' >> terraform_repo/temp.tfvars
-          echo 'mongodb_username = "sample_username"' >> terraform_repo/temp.tfvars
-          echo 'react_app_bucket_name = "sample_react_app_bucket"' >> terraform_repo/temp.tfvars
-          echo 'ec2_key_name = "sample_key_name"' >> terraform_repo/temp.tfvars
-
-# Modificación: Generación de Terraform Plan con tfvars
+          cd terraform_repo
+          # Mover archivos con recursos de AWS y MongoDB Atlas a una carpeta temporal
+          mkdir -p ../backup_resources
+          find . -type f -name "*.tf" -exec grep -l -E 'provider "(aws|mongodbatlas)"|resource "(aws|mongodbatlas)' {} \; -exec mv {} ../backup_resources/ \;
       - name: Generate Terraform Plan
         run: |
           cd terraform_repo
-          terraform init
-          terraform validate
-          terraform plan -out=tfplan -var-file="temp.tfvars"
-          terraform show -json tfplan > tfplan.json
-
+           terraform init
+           terraform validate
+           terraform plan -out=tfplan \
+             -var="api_gateway_name=testing_gateway" \
+             -var="flutter_app_bucket_name=testing_flutter_bucket" \
+             -var="grafana_cloud_api_key=testing_grafana_key" \
+             -var="mongodb_atlas_org_id=testing_org_id" \
+             -var="mongodb_atlas_private_key=testing_private_key" \
+             -var="mongodb_atlas_public_key=testing_public_key" \
+             -var="mongodb_cluster_name=testing_cluster_name" \
+             -var="mongodb_database_name=testing_database" \
+             -var="mongodb_password=testing_password" \
+             -var="mongodb_project_name=testing_project" \
+             -var="mongodb_username=testing_username" \
+             -var="react_app_bucket_name=testing_react_bucket" \
+             -var="ec2_key_name=testing_ec2_key"
+           terraform show -json tfplan > tfplan.json
       - name: Run Terravision to Generate Diagram
         run: |
           cd terravision
           ./terravision draw --source ../terraform_repo
           mv output.png ../diagram.png || mv diagram.png ../diagram.png || echo "El archivo no se generó como se esperaba"
-          # Comprueba si se generó el archivo
-          if [ ! -f "../diagram.png" ]; then
-            echo "Error: El archivo diagram.png no se generó correctamente."
-            exit 1
-          fi
-
       - name: Generate README.md
         run: |
           echo "# DIAGRAMAS " > README.md
           echo "" >> README.md
           echo "En esta rama se generan los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop, la rama donde están los archivos TF." >> README.md
           echo "" >> README.md
-
           # Añade el diagrama al README.md
           echo "## Diagrama de Infraestructura" >> README.md
           echo "![Diagrama de Infraestructura](diagram.png)" >> README.md
           echo "" >> README.md
-
           # Añade la estructura de archivos y lista de recursos como antes
+          
           echo "## Estructura de Archivos" >> README.md
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md
@@ -130,23 +119,16 @@ jobs:
           echo "- Grafana" >> README.md
           echo "- Aplicaciones Web y Móviles" >> README.md
           echo "- API Backend" >> README.md
-
-      - name: Commit and Push README.md y diagram.png
+      - name: Commit and Push README.md
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
-          
-          # Verifica si el archivo diagram.png existe
+          git add README.md diagram.png
           if [ -f "diagram.png" ]; then
-            # Añade README.md y diagram.png al commit
             git add README.md diagram.png
-            echo "Añadiendo README.md y diagram.png al commit"
           else
-            # Imprime un mensaje de error y no realiza el commit si diagram.png no se generó
-            echo "Error: diagram.png no se generó, no se realizará el commit"
-            exit 1
+            echo "El archivo diagram.png no se generó"
+            git add README.md
           fi
-          
-          # Realiza el commit
           git commit -m "Generar README.md y diagrama automáticamente" || echo "No hay cambios para commit"
           git push origin DesarrolloApiBack

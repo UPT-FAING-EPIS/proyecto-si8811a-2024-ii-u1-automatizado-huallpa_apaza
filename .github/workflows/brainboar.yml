@@ -1,0 +1,53 @@
+name: Generate README.md with Brainboard
+
+on:
+  push:
+    branches:
+      - DesarrolloApiBack
+
+jobs:
+  generate-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the main repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl unzip
+
+      - name: Install Brainboard CLI
+        run: |
+          curl -Lo brainboard-cli.zip https://cli.brainboard.co/brainboard-cli.zip
+          unzip brainboard-cli.zip -d /usr/local/bin/
+          chmod +x /usr/local/bin/brainboard
+
+      - name: Generate Infrastructure Diagram
+        run: |
+          cd terraform_repo  # Cambia a la carpeta donde está tu configuración de Brainboard
+          brainboard generate-diagram --source . --output diagram.png
+          
+      - name: Check if diagram.png exists
+        run: |
+          if [ -f "diagram.png" ]; then
+            echo "diagram.png exists"
+          else
+            echo "diagram.png does not exist"
+            exit 1
+          fi
+
+      - name: Generate README.md
+        run: |
+          echo "# DIAGRAMAS " > README.md
+          echo "## Diagrama de Infraestructura" >> README.md
+          echo "![Diagrama de Infraestructura](diagram.png)" >> README.md
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.name "jesus huallpa"
+          git config --local user.email "jh2021071085@virtual.upt.pe"
+          git add README.md diagram.png
+          git commit -m "Generar README.md y diagrama automáticamente" || echo "No hay cambios para commit"
+          git push origin DesarrolloApiBack

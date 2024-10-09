@@ -19,6 +19,33 @@ jobs:
           repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
           path: terraform_repo
           ref: develop
+name: Install Dependencies and Clone Repo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y graphviz
+          # Instala cualquier otra dependencia necesaria aquí
+
+      - name: Clone Terraform Visual Repository
+        run: |
+          git clone https://github.com/yourusername/terraform-visual.git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Install Terraform Visual
         run: |

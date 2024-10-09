@@ -31,7 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
         run: |
-          git clone https://github.com/mahmoudshakir/terraform-visual.git
+          git clone https://$GITHUB_TOKEN@github.com/mahmoudshakir/terraform-visual.git
           cd terraform-visual
           sudo make install  # Ensure this completes successfully
 

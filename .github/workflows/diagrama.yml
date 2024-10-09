@@ -42,13 +42,7 @@ jobs:
           chmod +x terravision
           export PATH=$PATH:$(pwd)
 
-      - name: Remove AWS and MongoDB Resources
-        run: |
-          cd terraform_repo
-          # Mover archivos con recursos de AWS y MongoDB Atlas a una carpeta temporal
-          mkdir -p ../backup_resources
-          find . -type f -name "*.tf" -exec grep -l -E 'provider "(aws|mongodbatlas)"|resource "(aws|mongodbatlas)' {} \; -exec mv {} ../backup_resources/ \;
-# Aquí agregamos la creación del archivo temporal de variables
+# Nueva sección: Creación del archivo temporal de variables tfvars
       - name: Create Temporary tfvars
         run: |
           echo 'api_gateway_name = "sample_api_gateway"' > terraform_repo/temp.tfvars
@@ -64,7 +58,8 @@ jobs:
           echo 'mongodb_username = "sample_username"' >> terraform_repo/temp.tfvars
           echo 'react_app_bucket_name = "sample_react_app_bucket"' >> terraform_repo/temp.tfvars
           echo 'ec2_key_name = "sample_key_name"' >> terraform_repo/temp.tfvars
-          
+
+# Modificación: Generación de Terraform Plan con tfvars
       - name: Generate Terraform Plan
         run: |
           cd terraform_repo
@@ -72,8 +67,6 @@ jobs:
           terraform validate
           terraform plan -out=tfplan -var-file="temp.tfvars"
           terraform show -json tfplan > tfplan.json
-
-
 
       - name: Run Terravision to Generate Diagram
         run: |
@@ -99,7 +92,6 @@ jobs:
           echo "" >> README.md
 
           # Añade la estructura de archivos y lista de recursos como antes
-          
           echo "## Estructura de Archivos" >> README.md
           echo '```mermaid' >> README.md
           echo "graph TD;" >> README.md

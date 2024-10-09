@@ -119,7 +119,18 @@ jobs:
           echo "- Grafana" >> README.md
           echo "- Aplicaciones Web y Móviles" >> README.md
           echo "- API Backend" >> README.md
-      - name: Commit and Push README.md
+      # Verificación de que la imagen existe
+      - name: Check if diagram.png exists
+        run: |
+          if [ -f "diagram.png" ]; then
+            echo "diagram.png exists"
+          else
+            echo "diagram.png does not exist"
+            exit 1
+          fi
+
+      # Commit y push de los cambios
+      - name: Commit and Push README.md and diagram.png
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"

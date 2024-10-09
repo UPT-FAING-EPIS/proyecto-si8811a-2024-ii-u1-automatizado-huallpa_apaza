@@ -119,6 +119,15 @@ jobs:
           echo "- Grafana" >> README.md
           echo "- Aplicaciones Web y Móviles" >> README.md
           echo "- API Backend" >> README.md
+      # Genera el diagrama
+      - name: Run Terravision to Generate Diagram
+        run: |
+          cd terravision
+          ./terravision draw --source ../terraform_repo
+          echo "Contenido del directorio después de generar el diagrama:"
+          ls -l  # Verificar qué archivos se generaron y en qué ruta
+          mv output.png ../diagram.png || mv diagram.png ../diagram.png || echo "El archivo no se generó como se esperaba"
+
       # Verificación de que la imagen existe
       - name: Check if diagram.png exists
         run: |

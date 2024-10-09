@@ -1,74 +1,26 @@
-name: Generate Infrastructure Diagrams
+name: Clone Repository
 
 on:
   push:
     branches:
       - DesarrolloApiBack
-      - main
 
 jobs:
-  generate-diagrams:
+  clone:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/DesarrolloApiBack'  # Solo ejecutar este trabajo en DesarrolloApiBack
 
     steps:
-      - name: Checkout the main repository
+      - name: Checkout the current repository
         uses: actions/checkout@v3
 
-      - name: Checkout the Terraform repository
-        uses: actions/checkout@v3
-        with:
-          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
-          path: terraform_repo
-          ref: develop
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'  # Especificar la versión correcta
-
-      - name: Install Dependencies
+      - name: Clone the external repository
         run: |
-          sudo apt update
-          sudo apt install -y graphviz
-          sudo apt install -y nodejs npm
-          sudo npm install -g npm@latest
+          git clone https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.git
           
-          # Intenta instalar terraform-visual desde GitHub si no está en npm
-          sudo npm install --global https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza.git
-
-      - name: Generate PNG Diagrams
+      - name: Commit and Push to your repository
         run: |
-          for tf_file in $(find terraform_repo -name "main.tf"); do
-              echo "Generating diagram for $tf_file"
-              terraform-visual -f "$tf_file" -o "${tf_file%.tf}.png"
-          done
-
-      - name: Commit and Push Diagrams
-        run: |
-          git config --local user.name "jesus huallpa"
-          git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add terraform_repo/*.png  # Ajustar la ruta según sea necesario
-          if git commit -m "Automatically generate infrastructure diagrams"; then
-            git push origin DesarrolloApiBack
-          else
-            echo "No changes to commit"
-          fi
-
-  install:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'  # Solo ejecutar este trabajo en main
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y graphviz
-          sudo apt install -y nodejs npm
-          sudo npm install -g npm@latest
-          
-          # Intenta instalar terraform-visual desde GitHub si no está en npm
-          sudo npm install --global https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza.git
+          cd proyecto-si8811a-2024-ii-u1-desarrollo-api-back
+          git remote add origin https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza.git
+          git push -u origin DesarrolloApiBack  # Cambia "main" si usas otra rama
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Usar el token de GitHub Actions para autenticación

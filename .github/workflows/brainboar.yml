@@ -9,7 +9,7 @@ on:
 jobs:
   generate-diagrams:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/DesarrolloApiBack'  # Only run this job on DesarrolloApiBack
+    if: github.ref == 'refs/heads/DesarrolloApiBack'  # Solo ejecutar este trabajo en DesarrolloApiBack
 
     steps:
       - name: Checkout the main repository
@@ -25,18 +25,17 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Specify the correct version
+          node-version: '18'  # Especificar la versión correcta
 
       - name: Install Dependencies
         run: |
           sudo apt update
           sudo apt install -y graphviz
-          # Install Node.js and npm
           sudo apt install -y nodejs npm
-          # Update npm to the latest version
           sudo npm install -g npm@latest
-          # Install terraform-visual globally
-          sudo npm install -g terraform-visual --verbose
+          
+          # Intenta instalar terraform-visual desde GitHub si no está en npm
+          sudo npm install --global https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza.git  # Reemplaza <git-repo-url> con la URL del repositorio de GitHub
 
       - name: Generate PNG Diagrams
         run: |
@@ -49,7 +48,7 @@ jobs:
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add *.png  # Ensure the generated images are in the root or adjust the pattern
+          git add terraform_repo/*.png  # Ajustar la ruta según sea necesario
           if git commit -m "Automatically generate infrastructure diagrams"; then
             git push origin DesarrolloApiBack
           else
@@ -58,7 +57,7 @@ jobs:
 
   install:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'  # Only run this job on main
+    if: github.ref == 'refs/heads/main'  # Solo ejecutar este trabajo en main
 
     steps:
       - name: Checkout Code
@@ -68,9 +67,8 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y graphviz
-          # Install Node.js and npm
           sudo apt install -y nodejs npm
-          # Update npm to the latest version
           sudo npm install -g npm@latest
-          # Install terraform-visual globally
-          sudo npm install -g terraform-visual --verbose
+          
+          # Intenta instalar terraform-visual desde GitHub si no está en npm
+          sudo npm install --global https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza.git  # Reemplaza <https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza.git> con la URL del repositorio de GitHub

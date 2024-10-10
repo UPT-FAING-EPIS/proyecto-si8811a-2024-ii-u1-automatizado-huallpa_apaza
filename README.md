@@ -3,7 +3,7 @@
 En esta rama se generan los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop, la rama donde están los archivos TF.
 
 ## Diagrama de Infraestructura
-![Diagrama de Infraestructura](Brainboard - diagrama.png)
+![Diagrama de Infraestructura](Brainboard%20-%20diagrama.png)
 
 ## Estructura de Archivos
 ```mermaid

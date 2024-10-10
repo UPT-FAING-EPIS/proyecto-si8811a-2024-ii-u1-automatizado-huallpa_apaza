@@ -5,7 +5,13 @@ En esta rama se generan los diagramas de infraestructura del repositorio proyect
 ## Diagrama de Infraestructura
 ![Diagrama de Infraestructura](Brainboard%20-%20diagrama.png)
 
-## Estructura de Archivos
+## Diagrama de Infraestructura
+```mermaid
+graph TD;
+    grafana_cloud_stack --> AWS
+```
+
+## Diagrama de Estructura de Archivos
 ```mermaid
 graph TD;
     Root --> terraform_repo
@@ -74,7 +80,7 @@ graph TD;
     web_app --> outputs.tf
     docker_host --> variables.tf
     docker_host --> outputs.tf
-    terraform_repo --> graph.dot
+    terraform_repo --> graph_dot
     terraform_repo --> tfplan.json
     terraform_repo --> terraform.tfvars.template
     terraform_repo --> diagrama.drawio

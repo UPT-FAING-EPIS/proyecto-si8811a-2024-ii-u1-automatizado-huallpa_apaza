@@ -77,7 +77,7 @@ jobs:
           echo "" >> README.md
           # Añade el diagrama al README.md
           echo "## Diagrama de Infraestructura" >> README.md
-          echo "![Diagrama de Infraestructura](Brainboard - diagrama.png)" >> README.md
+          echo "![Diagrama de Infraestructura](Brainboard%20-%20diagrama.png)" >> README.md
           echo "" >> README.md
           # Añade la estructura de archivos y lista de recursos como antes
           

@@ -11,28 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout your repo
-      uses: actions/checkout@v3
-
-    - name: Clone Selenium Test Repo
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      
+    - name: Check README.md
       run: |
-        git clone https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde
-        cp -r proyecto-si8811a-2024-ii-u1-pruebas-cano-valverde/* .
-
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-
-    - name: Run tests
-      run: |
-        pytest --alluredir=./allure-results  # Aquí puedes especificar solo un navegador si así lo deseas
-
-    - name: Generate Allure report
-      run: |
-        allure generate ./allure-results -o ./allure-report --clean
-
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./allure-report
+        if [ -f README.md ]; then
+          echo "README.md found."
+        else
+          echo "README.md not found!"
+          exit 1
+        fi

@@ -1,0 +1,38 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - ApisFunciones  # Cambia esto según la rama correcta que uses
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout current repository
+      uses: actions/checkout@v3
+      with:
+        repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-apis-y-funciones-jarro-y-valle
+        ref: develop
+
+    # Paso para iniciar sesión en Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}  # Añade tu nombre de usuario de Docker Hub en los secretos de GitHub
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}  # Añade el token de acceso de Docker Hub como secreto
+
+    # Construir y empujar la imagen a Docker Hub
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .  # El contexto es el directorio raíz del repo donde está tu Dockerfile
+        file: ./Dockerfile  # Asegúrate de que el Dockerfile esté en el directorio raíz
+        push: true
+        tags: palbertt/proyecto-si8811a-2024-ii-u1-apis-y-funciones-jarro-y-valle:latest
+
+    # (Opcional) Desplegar el contenedor en un servidor
+    - name: Deploy Docker Container (optional)
+      run: |
+        docker run -d -p 8080:8080 palbertt/proyecto-si8811a-2024-ii-u1-apis-y-funciones-jarro-y-valle:latest

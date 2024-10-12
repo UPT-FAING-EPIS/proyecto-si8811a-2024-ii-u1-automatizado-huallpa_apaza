@@ -59,3 +59,5 @@ El proyecto utiliza las siguientes tecnologías:
 - **.NET**
 
 Cada una de estas tecnologías juega un papel importante en la automatización, despliegue y gestión de la infraestructura del proyecto.
+# videos
+https://drive.google.com/file/d/1kC7-Db5IxIF-7vpMhV7qExs1aNemdv30/view?usp=sharing

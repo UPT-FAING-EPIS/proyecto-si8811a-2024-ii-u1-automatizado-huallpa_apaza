@@ -3,22 +3,12 @@
 En esta rama se generan los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop, la rama donde están los archivos TF.
 
 ## Diagrama de Infraestructura
+![Diagrama de Infraestructura](Brainboard%20-%20diagrama.png)
+
+## Diagrama de Infraestructura
 ```mermaid
 graph TD;
     grafana_cloud_stack --> AWS
-    mongodbatlas_project --> AWS
-    mongodbatlas_cluster --> AWS
-    mongodbatlas_database_user --> AWS
-    aws_s3_bucket --> AWS
-    aws_s3_bucket_website_configuration --> AWS
-    aws_s3_bucket_public_access_block --> AWS
-    aws_s3_bucket_policy --> AWS
-    aws_s3_bucket --> AWS
-    aws_s3_bucket_website_configuration --> AWS
-    aws_s3_bucket_public_access_block --> AWS
-    aws_s3_bucket_policy --> AWS
-    aws_instance --> AWS
-    aws_security_group --> AWS
 ```
 
 ## Diagrama de Estructura de Archivos
@@ -83,24 +73,20 @@ graph TD;
     grafana --> main.tf
     grafana --> outputs.tf
     mongodb --> variables.tf
-    mongodb --> main.tf
     mongodb --> outputs.tf
     mobile_app --> variables.tf
-    mobile_app --> main.tf
     mobile_app --> outputs.tf
     web_app --> variables.tf
-    web_app --> main.tf
     web_app --> outputs.tf
     docker_host --> variables.tf
-    docker_host --> main.tf
     docker_host --> outputs.tf
     terraform_repo --> graph_dot
+    terraform_repo --> tfplan.json
     terraform_repo --> terraform.tfvars.template
     terraform_repo --> diagrama.drawio
     workflows --> terraform.yml
     terraform_repo --> README.md
     terraform_repo --> variables.tf
-    terraform_repo --> main.tf
     info --> exclude
     .git --> HEAD
     .git --> config
@@ -159,6 +145,7 @@ graph TD;
     .git --> shallow
     terraform_repo --> outputs.tf
     terraform_repo --> .txt
+    terraform_repo --> tfplan
 ```
 
 ## Archivos Terraform Analizados
@@ -167,23 +154,16 @@ graph TD;
 - terraform_repo/modules/grafana/main.tf
 - terraform_repo/modules/grafana/outputs.tf
 - terraform_repo/modules/mongodb/variables.tf
-- terraform_repo/modules/mongodb/main.tf
 - terraform_repo/modules/mongodb/outputs.tf
 - terraform_repo/modules/mobile_app/variables.tf
-- terraform_repo/modules/mobile_app/main.tf
 - terraform_repo/modules/mobile_app/outputs.tf
 - terraform_repo/modules/web_app/variables.tf
-- terraform_repo/modules/web_app/main.tf
 - terraform_repo/modules/web_app/outputs.tf
 - terraform_repo/modules/docker_host/variables.tf
-- terraform_repo/modules/docker_host/main.tf
 - terraform_repo/modules/docker_host/outputs.tf
 - terraform_repo/variables.tf
-- terraform_repo/main.tf
 - terraform_repo/outputs.tf
-
 ## Recursos Utilizados
-- EC2
 - MongoDB
 - Grafana
 - Aplicaciones Web y Móviles

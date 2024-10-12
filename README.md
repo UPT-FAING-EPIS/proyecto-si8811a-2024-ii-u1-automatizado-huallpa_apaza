@@ -234,3 +234,81 @@ jobs:
     - name: Deploy Docker Container  # Despliegue del contenedor Docker
       run: |
         docker run -d -p 5000:5000 palbertt/automatizacion:api1-v1.0.0  # Despliega el contenedor y lo expone en el puerto 5000
+```
+
+# CI/CD Pipeline - Proyecto SI8811A 2024-II U1 Apis y Funciones
+
+Este repositorio contiene un pipeline de **CI/CD** automatizado, que gestiona la construcción, envío y despliegue de imágenes Docker para el proyecto. Este pipeline está configurado para activarse cuando se realiza un **push** en la rama `ApisFunciones`. Utiliza **GitHub Actions** para ejecutar los pasos necesarios que aseguran que la imagen Docker se construya correctamente y se almacene en Docker Hub, lista para ser utilizada o desplegada en un servidor.
+
+## Tecnologías Usadas
+
+- **GitHub Actions**: Plataforma de automatización para gestionar y ejecutar los flujos de trabajo CI/CD.
+- **Docker**: Tecnología de contenedorización para empaquetar aplicaciones y sus dependencias en contenedores.
+- **Docker Hub**: Repositorio de imágenes Docker donde se almacena y comparte la imagen construida.
+- **Ubuntu**: Sistema operativo base para ejecutar los flujos de trabajo.
+- **Git**: Sistema de control de versiones para gestionar el código fuente.
+
+## Flujo de Trabajo Automatizado
+
+1. **Commit en la rama `ApisFunciones`**: Al hacer un push a la rama, se activa el pipeline.
+2. **Clonación del repositorio**: El pipeline clona el repositorio y accede al código fuente.
+3. **Inicio de sesión en Docker Hub**: Se autentica en Docker Hub usando las credenciales almacenadas como secretos en GitHub.
+4. **Construcción de la imagen Docker**: Se construye una imagen a partir del `Dockerfile`.
+5. **Envío de la imagen a Docker Hub**: La imagen se envía al repositorio de Docker Hub con la etiqueta `latest`.
+6. **Despliegue opcional del contenedor**: Se ejecuta el contenedor Docker utilizando la imagen subida.
+
+## Diagrama de Flujo de Trabajo
+
+```mermaid
+graph TD
+    A[Push a Branch] --> B[Clone Repository]
+    B --> C[Log in Docker Hub]
+    C --> D[Build Docker Image]
+    D --> E[Push to Docker Hub]
+    E --> F{Deploy Docker Container?}
+    F --> |Yes| G[Run Docker Container]
+```
+### Archivo YAML - GitHub Actions
+
+Este es el archivo YAML completo que configura el flujo de trabajo para CI/CD:
+
+```yaml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - ApisFunciones  # Cambia esto según la rama correcta que uses
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout current repository
+      uses: actions/checkout@v3
+      with:
+        repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-apis-y-funciones-jarro-y-valle
+        ref: develop
+
+    # Paso para iniciar sesión en Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}  # Añade tu nombre de usuario de Docker Hub en los secretos de GitHub
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}  # Añade el token de acceso de Docker Hub como secreto
+
+    # Construir y empujar la imagen a Docker Hub
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .  # El contexto es el directorio raíz del repo donde está tu Dockerfile
+        file: ./Dockerfile  # Asegúrate de que el Dockerfile esté en el directorio raíz
+        push: true
+        tags: palbertt/proyecto-si8811a-2024-ii-u1-apis-y-funciones-jarro-y-valle:latest
+
+    # (Opcional) Desplegar el contenedor en un servidor
+    - name: Deploy Docker Container (optional)
+      run: |
+        docker run -d -p 8080:8080 palbertt/proyecto-si8811a-2024-ii-u1-apis-y-funciones-jarro-y-valle:latest
+```

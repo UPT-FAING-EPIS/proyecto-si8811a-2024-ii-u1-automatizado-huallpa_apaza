@@ -42,13 +42,13 @@ jobs:
           from diagrams.aws.database import RDS
           from diagrams.aws.network import ELB
           from diagrams.aws.storage import S3
-
+          
           with Diagram('Infrastructure Diagram', show=False, filename='infra_diagram', outformat='png'):
               ec2_instances = []
               db_instances = []
               elb_instances = []
               s3_buckets = []
-
+          
               # Recorrer archivos Terraform
               for root, _, files in os.walk('terraform_repo'):
                   for file in files:
@@ -67,24 +67,24 @@ jobs:
                                               elb_instances.append(ELB(instance_name))
                                           elif resource_type == 'aws_s3_bucket':
                                               s3_buckets.append(S3(instance_name))
-
+          
               # Agrupar recursos en clústeres
-              with Cluster("Compute Instances"):
+              with Cluster('Compute Instances'):
                   for instance in ec2_instances:
                       instance
-
-              with Cluster("Database Instances"):
+          
+              with Cluster('Database Instances'):
                   for db in db_instances:
                       db
-
-              with Cluster("Load Balancers"):
+          
+              with Cluster('Load Balancers'):
                   for elb in elb_instances:
                       elb
-
-              with Cluster("Storage"):
+          
+              with Cluster('Storage'):
                   for bucket in s3_buckets:
                       bucket
-
+          
               # Conectar recursos en el diagrama (conexiones personalizables)
               for elb in elb_instances:
                   for ec2 in ec2_instances:
@@ -94,16 +94,3 @@ jobs:
           " > generate_diagram.py
           python generate_diagram.py
 
-      - name: Commit and Push Diagram
-        run: |
-          git config --local user.name "jesus huallpa"
-          git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add infra_diagram.png
-          git commit -m "Agregar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
-          git push origin DesarrolloApiBack
-
-      - name: Upload Diagram as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: infra_diagram
-          path: infra_diagram.png

@@ -121,11 +121,39 @@ jobs:
                       grafana
           
               # Conectar recursos en el diagrama
+              # Conexión entre el balanceador de carga y las instancias EC2
               for elb in elb_instances:
                   for ec2 in ec2_instances:
                       elb >> ec2
+
+              # Conexión de las instancias EC2 a las bases de datos
+              for ec2 in ec2_instances:
                   for db in db_instances:
                       ec2 >> db
+                  for mongo in mongodb_instances:
+                      ec2 >> mongo
+
+              # Conexión de EC2 a S3
+              for ec2 in ec2_instances:
+                  for bucket in s3_buckets:
+                      ec2 >> bucket
+
+              # Conexión de Lambda a S3
+              for lambda_func in lambda_instances:
+                  for bucket in s3_buckets:
+                      lambda_func >> bucket
+
+              # Conectar instancias EC2 al grupo de seguridad
+              for ec2 in ec2_instances:
+                  for sg in security_groups:
+                      sg >> ec2
+
+              # Conectar Grafana a las bases de datos para monitoreo
+              for grafana in grafana_instances:
+                  for db in db_instances:
+                      grafana >> db
+                  for mongo in mongodb_instances:
+                      grafana >> mongo
           " > generate_diagram.py
           python generate_diagram.py
 

@@ -57,20 +57,24 @@ jobs:
               for root, _, files in os.walk('terraform_repo'):
                   for file in files:
                       if file.endswith('.tf'):
+                          print(f"Procesando archivo: {file}")
                           with open(os.path.join(root, file), 'r') as f:
-                              terraform_data = hcl2.load(f)
-                              for resource in terraform_data.get('resource', []):
-                                  for resource_type, instances in resource.items():
-                                      for instance_name, instance_data in instances.items():
-                                          # Agregar los recursos al grupo correspondiente
-                                          if resource_type == 'aws_instance':
-                                              ec2_instances.append(EC2(instance_name))
-                                          elif resource_type == 'aws_db_instance':
-                                              db_instances.append(RDS(instance_name))
-                                          elif resource_type == 'aws_elb':
-                                              elb_instances.append(ELB(instance_name))
-                                          elif resource_type == 'aws_s3_bucket':
-                                              s3_buckets.append(S3(instance_name))
+                              try:
+                                  terraform_data = hcl2.load(f)
+                                  print(f"Contenido de {file}: {terraform_data}")
+                                  for resource in terraform_data.get('resource', []):
+                                      for resource_type, instances in resource.items():
+                                          for instance_name, instance_data in instances.items():
+                                              if resource_type == 'aws_instance':
+                                                  ec2_instances.append(EC2(instance_name))
+                                              elif resource_type == 'aws_db_instance':
+                                                  db_instances.append(RDS(instance_name))
+                                              elif resource_type == 'aws_elb':
+                                                  elb_instances.append(ELB(instance_name))
+                                              elif resource_type == 'aws_s3_bucket':
+                                                  s3_buckets.append(S3(instance_name))
+                              except Exception as e:
+                                  print(f"Error al cargar {file}: {e}")
           
               # Agrupar recursos en clústeres
               with Cluster('Compute Instances'):
@@ -89,15 +93,18 @@ jobs:
                   for bucket in s3_buckets:
                       bucket
           
-              # Conectar recursos en el diagrama (conexiones personalizables)
+              # Conectar recursos en el diagrama
               for elb in elb_instances:
                   for ec2 in ec2_instances:
                       elb >> ec2
                   for db in db_instances:
                       ec2 >> db
+
           " > generate_diagram.py
           python generate_diagram.py
-
+      - name: Generate Diagram from Terraform Files
+        run: |
+          python generate_diagram.py || echo "Error al generar el diagrama"
       - name: Commit and Push Diagram
         run: |
           git config --local user.name "jesus huallpa"

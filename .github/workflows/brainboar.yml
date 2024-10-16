@@ -32,10 +32,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install diagrams python-hcl2
 
-      - name: Remove existing diagram if present
-        run: |
-          rm -f infra_diagram.png
-
       - name: Generate Diagram from Terraform Files
         run: |
           echo "
@@ -46,18 +42,20 @@ jobs:
           from diagrams.aws.database import RDS
           from diagrams.aws.network import ELB
           from diagrams.aws.storage import S3
-          
+          from diagrams.aws.compute import Lambda
+
           with Diagram('Infrastructure Diagram', show=False, filename='infra_diagram', outformat='png'):
               ec2_instances = []
               db_instances = []
               elb_instances = []
               s3_buckets = []
-          
+              lambda_instances = []
+
               # Recorrer archivos Terraform
               for root, _, files in os.walk('terraform_repo'):
                   for file in files:
                       if file.endswith('.tf'):
-                          print(f\"Procesando archivo: {file}\")  # Corregido con comillas dobles
+                          print(f\"Procesando archivo: {file}\")
                           with open(os.path.join(root, file), 'r') as f:
                               try:
                                   terraform_data = hcl2.load(f)
@@ -65,6 +63,7 @@ jobs:
                                   for resource in terraform_data.get('resource', []):
                                       for resource_type, instances in resource.items():
                                           for instance_name, instance_data in instances.items():
+                                              print(f\"Tipo de recurso detectado: {resource_type} - Nombre: {instance_name}\")
                                               if resource_type == 'aws_instance':
                                                   ec2_instances.append(EC2(instance_name))
                                               elif resource_type == 'aws_db_instance':
@@ -73,26 +72,32 @@ jobs:
                                                   elb_instances.append(ELB(instance_name))
                                               elif resource_type == 'aws_s3_bucket':
                                                   s3_buckets.append(S3(instance_name))
+                                              elif resource_type == 'aws_lambda_function':
+                                                  lambda_instances.append(Lambda(instance_name))
                               except Exception as e:
                                   print(f\"Error al cargar {file}: {e}\")
-          
+
               # Agrupar recursos en clústeres
               with Cluster('Compute Instances'):
                   for instance in ec2_instances:
                       instance
-          
+
               with Cluster('Database Instances'):
                   for db in db_instances:
                       db
-          
+
               with Cluster('Load Balancers'):
                   for elb in elb_instances:
                       elb
-          
+
               with Cluster('Storage'):
                   for bucket in s3_buckets:
                       bucket
-          
+
+              with Cluster('Lambda Functions'):
+                  for lambda_func in lambda_instances:
+                      lambda_func
+
               # Conectar recursos en el diagrama
               for elb in elb_instances:
                   for ec2 in ec2_instances:
@@ -102,14 +107,27 @@ jobs:
           " > generate_diagram.py
           python generate_diagram.py
 
-      - name: Generate Diagram from Terraform Files
+      - name: Check if diagram was created
         run: |
-          python generate_diagram.py || echo "Error al generar el diagrama"
+          if [ -f "infra_diagram.png" ]; then
+            echo "Diagrama generado exitosamente."
+          else
+            echo "Error: El archivo infra_diagram.png no fue generado."
+            exit 1
+          fi
+
+      - name: Conditional Remove Existing Diagram
+        run: |
+          if git ls-files --error-unmatch infra_diagram.png > /dev/null 2>&1; then
+            git rm -f infra_diagram.png
+          else
+            echo "No hay archivo previo de infra_diagram.png para eliminar."
+          fi
+
       - name: Commit and Push Diagram
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
-          git rm -f infra_diagram.png || true
           git add infra_diagram.png
           git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
           git push origin DesarrolloApiBack --force

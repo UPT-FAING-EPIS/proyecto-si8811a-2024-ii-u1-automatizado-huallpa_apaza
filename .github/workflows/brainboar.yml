@@ -127,6 +127,7 @@ jobs:
                   for db in db_instances:
                       ec2 >> db
 
+
           " > generate_diagram.py
           python generate_diagram.py
 

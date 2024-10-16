@@ -57,7 +57,7 @@ jobs:
               for root, _, files in os.walk('terraform_repo'):
                   for file in files:
                       if file.endswith('.tf'):
-                          print(f"Procesando archivo: {file}")  # Corregido con comillas
+                          print(f"Procesando archivo: {file}")  # Corregido con comillas dobles
                           with open(os.path.join(root, file), 'r') as f:
                               try:
                                   terraform_data = hcl2.load(f)
@@ -99,6 +99,7 @@ jobs:
                       elb >> ec2
                   for db in db_instances:
                       ec2 >> db
+
 
           " > generate_diagram.py
           python generate_diagram.py

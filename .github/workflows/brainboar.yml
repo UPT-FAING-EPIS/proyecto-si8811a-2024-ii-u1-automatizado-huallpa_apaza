@@ -37,13 +37,17 @@ jobs:
           echo "
           import os
           import hcl2
-          from diagrams import Diagram
+          from diagrams import Diagram, Cluster
           from diagrams.aws.compute import EC2
           from diagrams.aws.database import RDS
           from diagrams.aws.network import ELB
+          from diagrams.aws.storage import S3
 
           with Diagram('Infrastructure Diagram', show=False, filename='infra_diagram', outformat='png'):
-              resources = []
+              ec2_instances = []
+              db_instances = []
+              elb_instances = []
+              s3_buckets = []
 
               # Recorrer archivos Terraform
               for root, _, files in os.walk('terraform_repo'):
@@ -54,16 +58,39 @@ jobs:
                               for resource in terraform_data.get('resource', []):
                                   for resource_type, instances in resource.items():
                                       for instance_name, instance_data in instances.items():
+                                          # Agregar los recursos al grupo correspondiente
                                           if resource_type == 'aws_instance':
-                                              resources.append(EC2(instance_name))
+                                              ec2_instances.append(EC2(instance_name))
                                           elif resource_type == 'aws_db_instance':
-                                              resources.append(RDS(instance_name))
+                                              db_instances.append(RDS(instance_name))
                                           elif resource_type == 'aws_elb':
-                                              resources.append(ELB(instance_name))
+                                              elb_instances.append(ELB(instance_name))
+                                          elif resource_type == 'aws_s3_bucket':
+                                              s3_buckets.append(S3(instance_name))
 
-              # Conectar recursos en el diagrama (ejemplo simple)
-              for i in range(len(resources) - 1):
-                  resources[i] >> resources[i + 1]
+              # Agrupar recursos en clústeres
+              with Cluster("Compute Instances"):
+                  for instance in ec2_instances:
+                      instance
+
+              with Cluster("Database Instances"):
+                  for db in db_instances:
+                      db
+
+              with Cluster("Load Balancers"):
+                  for elb in elb_instances:
+                      elb
+
+              with Cluster("Storage"):
+                  for bucket in s3_buckets:
+                      bucket
+
+              # Conectar recursos en el diagrama (conexiones personalizables)
+              for elb in elb_instances:
+                  for ec2 in ec2_instances:
+                      elb >> ec2
+                  for db in db_instances:
+                      ec2 >> db
           " > generate_diagram.py
           python generate_diagram.py
 
@@ -80,39 +107,3 @@ jobs:
         with:
           name: infra_diagram
           path: infra_diagram.png
-      - name: Generate Diagram from Terraform Files
-        run: |
-          echo "
-          import os
-          import hcl2
-          from diagrams import Diagram
-          from diagrams.aws.compute import EC2
-          from diagrams.aws.database import RDS
-          from diagrams.aws.network import ELB
-      
-          with Diagram('Infrastructure Diagram', show=False, filename='infra_diagram', outformat='png'):
-              resources = []
-      
-              # Recorrer archivos Terraform
-              for root, _, files in os.walk('terraform_repo'):
-                  for file in files:
-                      if file.endswith('.tf'):
-                          with open(os.path.join(root, file), 'r') as f:
-                              terraform_data = hcl2.load(f)
-                              print(f'Analizando archivo: {file}')
-                              for resource in terraform_data.get('resource', []):
-                                  for resource_type, instances in resource.items():
-                                      for instance_name, instance_data in instances.items():
-                                          print(f'Recurso detectado: {resource_type} - {instance_name}')
-                                          if resource_type == 'aws_instance':
-                                              resources.append(EC2(instance_name))
-                                          elif resource_type == 'aws_db_instance':
-                                              resources.append(RDS(instance_name))
-                                          elif resource_type == 'aws_elb':
-                                              resources.append(ELB(instance_name))
-      
-              # Conectar recursos en el diagrama (ejemplo simple)
-              for i in range(len(resources) - 1):
-                  resources[i] >> resources[i + 1]
-          " > generate_diagram.py
-          python generate_diagram.py

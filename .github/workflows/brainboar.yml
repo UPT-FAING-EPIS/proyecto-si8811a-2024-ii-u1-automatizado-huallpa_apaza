@@ -30,13 +30,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y graphviz
           python -m pip install --upgrade pip
-          pip install diagrams pyhcl
+          pip install diagrams python-hcl2
 
       - name: Generate Diagram from Terraform Files
         run: |
           echo "
           import os
-          import hcl
+          import hcl2
           from diagrams import Diagram
           from diagrams.aws.compute import EC2
           from diagrams.aws.database import RDS
@@ -50,7 +50,7 @@ jobs:
                   for file in files:
                       if file.endswith('.tf'):
                           with open(os.path.join(root, file), 'r') as f:
-                              terraform_data = hcl.load(f)
+                              terraform_data = hcl2.load(f)
                               for resource in terraform_data.get('resource', []):
                                   for resource_type, instances in resource.items():
                                       for instance_name, instance_data in instances.items():

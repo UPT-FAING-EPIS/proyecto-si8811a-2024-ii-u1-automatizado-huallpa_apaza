@@ -57,11 +57,11 @@ jobs:
               for root, _, files in os.walk('terraform_repo'):
                   for file in files:
                       if file.endswith('.tf'):
-                          print(f"Procesando archivo: {file}")  # Corregido con comillas dobles
+                          print(f\"Procesando archivo: {file}\")  # Corregido con comillas dobles
                           with open(os.path.join(root, file), 'r') as f:
                               try:
                                   terraform_data = hcl2.load(f)
-                                  print(f"Contenido de {file}: {terraform_data}")
+                                  print(f\"Contenido de {file}: {terraform_data}\")
                                   for resource in terraform_data.get('resource', []):
                                       for resource_type, instances in resource.items():
                                           for instance_name, instance_data in instances.items():
@@ -74,7 +74,7 @@ jobs:
                                               elif resource_type == 'aws_s3_bucket':
                                                   s3_buckets.append(S3(instance_name))
                               except Exception as e:
-                                  print(f"Error al cargar {file}: {e}")
+                                  print(f\"Error al cargar {file}: {e}\")
           
               # Agrupar recursos en clústeres
               with Cluster('Compute Instances'):
@@ -99,10 +99,9 @@ jobs:
                       elb >> ec2
                   for db in db_instances:
                       ec2 >> db
-
-
           " > generate_diagram.py
           python generate_diagram.py
+
       - name: Generate Diagram from Terraform Files
         run: |
           python generate_diagram.py || echo "Error al generar el diagrama"

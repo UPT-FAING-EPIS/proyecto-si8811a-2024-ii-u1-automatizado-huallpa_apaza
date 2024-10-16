@@ -32,6 +32,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install diagrams python-hcl2
 
+      - name: Remove existing diagram if present
+        run: |
+          rm -f infra_diagram.png
+
       - name: Generate Diagram from Terraform Files
         run: |
           echo "
@@ -93,4 +97,19 @@ jobs:
                       ec2 >> db
           " > generate_diagram.py
           python generate_diagram.py
+
+      - name: Commit and Push Diagram
+        run: |
+          git config --local user.name "jesus huallpa"
+          git config --local user.email "jh2021071085@virtual.upt.pe"
+          git rm -f infra_diagram.png || true
+          git add infra_diagram.png
+          git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
+          git push origin DesarrolloApiBack --force
+
+      - name: Upload Diagram as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: infra_diagram
+          path: infra_diagram.png
 

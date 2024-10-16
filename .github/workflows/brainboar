@@ -1,4 +1,4 @@
-name: Clone Repository
+name: Generate README.md
 
 on:
   push:
@@ -6,21 +6,92 @@ on:
       - DesarrolloApiBack
 
 jobs:
-  clone:
+  generate-readme:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the current repository
+      - name: Checkout the main repository
         uses: actions/checkout@v3
 
-      - name: Clone the external repository
+      - name: Checkout the Terraform repository
+        uses: actions/checkout@v3
+        with:
+          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
+          path: terraform_repo  # Directorio donde se clonará el repo
+          ref: develop  # Rama donde están los archivos TF
+
+      - name: Install Terraform
         run: |
-          git clone https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back.git
+          curl -LO https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
+          unzip terraform_1.0.0_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+
+      - name: Remove AWS and MongoDB Resources
+        run: |
+          cd terraform_repo
+          mkdir -p ../backup_resources
+          find . -type f -name "*.tf" -exec grep -l -E 'provider "(aws|mongodbatlas)"|resource "(aws|mongodbatlas)' {} \; -exec mv {} ../backup_resources/ \;
+
+      - name: Generate Terraform Plan
+        run: |
+          cd terraform_repo
+          terraform init
+          terraform validate
+          terraform plan -out=tfplan \
+            -var="api_gateway_name=testing_gateway" \
+            -var="flutter_app_bucket_name=testing_flutter_bucket" \
+            -var="grafana_cloud_api_key=testing_grafana_key" \
+            -var="mongodb_atlas_org_id=testing_org_id" \
+            -var="mongodb_atlas_private_key=testing_private_key" \
+            -var="mongodb_atlas_public_key=testing_public_key" \
+            -var="mongodb_cluster_name=testing_cluster_name" \
+            -var="mongodb_database_name=testing_database" \
+            -var="mongodb_password=testing_password" \
+            -var="mongodb_project_name=testing_project" \
+            -var="mongodb_username=testing_username" \
+            -var="react_app_bucket_name=testing_react_bucket" \
+            -var="ec2_key_name=testing_ec2_key"
+          terraform show -json tfplan > tfplan.json
+
+      - name: Generate Infrastructure Diagram with Terraform Graph
+        run: |
+          cd terraform_repo
+          terraform graph -type=plan | dot -Tpng -o ../diagram.png
+
+      - name: Generate README.md
+        run: |
+          echo "# DIAGRAMAS " > README.md
+          echo "" >> README.md
+          echo "En esta rama se generan los diagramas de infraestructura del repositorio proyecto-si8811a-2024-ii-u1-desarrollo-api-back y develop, la rama donde están los archivos TF." >> README.md
+          echo "" >> README.md
+          echo "## Diagrama de Infraestructura" >> README.md
+          echo "![Diagrama de Infraestructura](diagram.png)" >> README.md
+          echo "" >> README.md
+          echo "## Archivos Terraform Analizados" >> README.md
           
-      - name: Commit and Push to your repository
+          # Añadir lista de archivos .tf al README.md
+          find terraform_repo -name "*.tf" -exec echo "- {}" >> README.md \;
+
+          echo "## Recursos Utilizados" >> README.md
+          echo "- MongoDB" >> README.md
+          echo "- Grafana" >> README.md
+          echo "- Aplicaciones Web y Móviles" >> README.md
+          echo "- API Backend" >> README.md
+
+      - name: Commit and Push README.md
         run: |
-          cd proyecto-si8811a-2024-ii-u1-desarrollo-api-back
-          git remote add origin https://github.com/UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-automatizado-huallpa_apaza.git
-          git push -u origin DesarrolloApiBack  # Cambia "main" si usas otra rama
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Usar el token de GitHub Actions para autenticación
+          git config --local user.name "jesus huallpa"
+          git config --local user.email "jh2021071085@virtual.upt.pe"
+          if [ -f "diagram.png" ]; then
+            git add README.md diagram.png
+          else
+            echo "El archivo diagram.png no se generó"
+            git add README.md
+          fi
+          git commit -m "Generar README.md y diagrama automáticamente" || echo "No hay cambios para commit"
+          git push origin DesarrolloApiBack

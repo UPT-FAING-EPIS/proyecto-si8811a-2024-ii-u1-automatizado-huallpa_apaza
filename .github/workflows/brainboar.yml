@@ -13,6 +13,13 @@ jobs:
       - name: Checkout the main repository
         uses: actions/checkout@v3
 
+      - name: Checkout the Terraform repository
+        uses: actions/checkout@v3
+        with:
+          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
+          path: terraform_repo
+          ref: develop
+
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
@@ -21,33 +28,42 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y graphviz  # Instala Graphviz
+          sudo apt-get install -y graphviz
           python -m pip install --upgrade pip
-          pip install diagrams
+          pip install diagrams hcl2
 
-      - name: Generate Diagram with Diagrams as Code
+      - name: Generate Diagram from Terraform Files
         run: |
           echo "
-          from diagrams import Diagram, Cluster
+          import os
+          import hcl2
+          from diagrams import Diagram
           from diagrams.aws.compute import EC2
           from diagrams.aws.database import RDS
           from diagrams.aws.network import ELB
 
           with Diagram('Infrastructure Diagram', show=False, filename='infra_diagram', outformat='png'):
-              lb = ELB('Load Balancer')
-              
-              with Cluster('Web Servers'):
-                  web1 = EC2('web1')
-                  web2 = EC2('web2')
-                  
-              with Cluster('Database Cluster'):
-                  db_primary = RDS('Primary DB')
-                  db_primary - [RDS('Replica DB1'), RDS('Replica DB2')]
+              resources = []
 
-              lb >> web1
-              lb >> web2
-              web1 >> db_primary
-              web2 >> db_primary
+              # Recorrer archivos Terraform
+              for root, _, files in os.walk('terraform_repo'):
+                  for file in files:
+                      if file.endswith('.tf'):
+                          with open(os.path.join(root, file), 'r') as f:
+                              terraform_data = hcl2.load(f)
+                              for resource in terraform_data.get('resource', []):
+                                  for resource_type, instances in resource.items():
+                                      for instance_name, instance_data in instances.items():
+                                          if resource_type == 'aws_instance':
+                                              resources.append(EC2(instance_name))
+                                          elif resource_type == 'aws_db_instance':
+                                              resources.append(RDS(instance_name))
+                                          elif resource_type == 'aws_elb':
+                                              resources.append(ELB(instance_name))
+
+              # Conectar recursos en el diagrama (ejemplo simple)
+              for i in range(len(resources) - 1):
+                  resources[i] >> resources[i + 1]
           " > generate_diagram.py
           python generate_diagram.py
 
@@ -64,3 +80,4 @@ jobs:
         with:
           name: infra_diagram
           path: infra_diagram.png
+

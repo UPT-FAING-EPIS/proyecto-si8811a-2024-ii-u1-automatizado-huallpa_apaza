@@ -20,6 +20,8 @@ jobs:
       
       - name: Install dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz  # Instala Graphviz
           python -m pip install --upgrade pip
           pip install diagrams
 
@@ -62,4 +64,3 @@ jobs:
         with:
           name: infra_diagram
           path: infra_diagram.png
-

@@ -116,25 +116,24 @@ jobs:
             exit 1
           fi
 
-      - name: Conditional Remove Existing Diagram
-        run: |
-          if git ls-files --error-unmatch infra_diagram.png > /dev/null 2>&1; then
-            git rm -f infra_diagram.png
-          else
-            echo "No hay archivo previo de infra_diagram.png para eliminar."
-          fi
+      - name: List files in the current directory
+        run: ls -alh
 
       - name: Commit and Push Diagram
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add infra_diagram.png
-          git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
-          git push origin DesarrolloApiBack --force
+          if [ -f "infra_diagram.png" ]; then
+            git add infra_diagram.png
+            git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
+            git push origin DesarrolloApiBack --force
+          else
+            echo "Error: infra_diagram.png no se generó."
+            exit 1
+          fi
 
       - name: Upload Diagram as Artifact
         uses: actions/upload-artifact@v3
         with:
           name: infra_diagram
           path: infra_diagram.png
-

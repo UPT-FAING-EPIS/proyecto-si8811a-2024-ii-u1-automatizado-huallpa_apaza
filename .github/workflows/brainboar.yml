@@ -35,17 +35,22 @@ jobs:
       - name: Generate Terraform Graph
         run: |
           cd terraform_repo
-          terraform graph > ../infra_diagram.dot
+          terraform graph > ../terraform_repo/infra_diagram.dot
 
       - name: Convert DOT to PNG
         run: |
+          cd terraform_repo
           dot -Tpng infra_diagram.dot -o infra_diagram.png
-      
+
+      - name: Move PNG to Repository Root
+        run: |
+          mv terraform_repo/infra_diagram.png .
+
       - name: Commit and Push Diagram
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
-          git add ../infra_diagram.png
+          git add infra_diagram.png
           git commit -m "Agregar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
           git push origin DesarrolloApiBack
 
@@ -54,4 +59,3 @@ jobs:
         with:
           name: infra_diagram
           path: infra_diagram.png
-

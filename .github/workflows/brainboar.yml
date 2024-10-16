@@ -43,27 +43,33 @@ jobs:
           from diagrams.aws.network import ELB
           from diagrams.aws.storage import S3
           from diagrams.aws.compute import Lambda
-
+          from diagrams.aws.security import SecurityGroup
+          from diagrams.onprem.monitoring import Grafana
+          from diagrams.onprem.database import MongoDB
+          
           with Diagram('Infrastructure Diagram', show=False, filename='infra_diagram', outformat='png'):
               ec2_instances = []
               db_instances = []
               elb_instances = []
               s3_buckets = []
               lambda_instances = []
-
+              security_groups = []
+              grafana_instances = []
+              mongodb_instances = []
+          
               # Recorrer archivos Terraform
               for root, _, files in os.walk('terraform_repo'):
                   for file in files:
                       if file.endswith('.tf'):
-                          print(f\"Procesando archivo: {file}\")
+                          print(f"Procesando archivo: {file}")
                           with open(os.path.join(root, file), 'r') as f:
                               try:
                                   terraform_data = hcl2.load(f)
-                                  print(f\"Contenido de {file}: {terraform_data}\")
+                                  print(f"Contenido de {file}: {terraform_data}")
                                   for resource in terraform_data.get('resource', []):
                                       for resource_type, instances in resource.items():
                                           for instance_name, instance_data in instances.items():
-                                              print(f\"Tipo de recurso detectado: {resource_type} - Nombre: {instance_name}\")
+                                              print(f"Tipo de recurso detectado: {resource_type} - Nombre: {instance_name}")
                                               if resource_type == 'aws_instance':
                                                   ec2_instances.append(EC2(instance_name))
                                               elif resource_type == 'aws_db_instance':
@@ -74,36 +80,53 @@ jobs:
                                                   s3_buckets.append(S3(instance_name))
                                               elif resource_type == 'aws_lambda_function':
                                                   lambda_instances.append(Lambda(instance_name))
+                                              elif resource_type == 'aws_security_group':
+                                                  security_groups.append(SecurityGroup(instance_name))
+                                              elif resource_type == 'grafana_cloud_stack':
+                                                  grafana_instances.append(Grafana(instance_name))
+                                              elif resource_type == 'mongodbatlas_project' or resource_type == 'mongodbatlas_cluster':
+                                                  mongodb_instances.append(MongoDB(instance_name))
                               except Exception as e:
-                                  print(f\"Error al cargar {file}: {e}\")
-
+                                  print(f"Error al cargar {file}: {e}")
+          
               # Agrupar recursos en clústeres
               with Cluster('Compute Instances'):
                   for instance in ec2_instances:
                       instance
-
+          
               with Cluster('Database Instances'):
                   for db in db_instances:
                       db
-
+                  for mongo in mongodb_instances:
+                      mongo
+          
               with Cluster('Load Balancers'):
                   for elb in elb_instances:
                       elb
-
+          
               with Cluster('Storage'):
                   for bucket in s3_buckets:
                       bucket
-
+          
               with Cluster('Lambda Functions'):
                   for lambda_func in lambda_instances:
                       lambda_func
-
+          
+              with Cluster('Security Groups'):
+                  for sg in security_groups:
+                      sg
+          
+              with Cluster('Monitoring'):
+                  for grafana in grafana_instances:
+                      grafana
+          
               # Conectar recursos en el diagrama
               for elb in elb_instances:
                   for ec2 in ec2_instances:
                       elb >> ec2
                   for db in db_instances:
                       ec2 >> db
+
           " > generate_diagram.py
           python generate_diagram.py
 

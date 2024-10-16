@@ -13,38 +13,41 @@ jobs:
       - name: Checkout the main repository
         uses: actions/checkout@v3
 
-      - name: Checkout the Terraform repository
-        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
         with:
-          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
-          path: terraform_repo
-          ref: develop
-
-      - name: Install Terraform
-        run: |
-          sudo apt-get update && sudo apt-get install -y unzip graphviz
-          curl -LO https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
-          unzip terraform_1.6.0_linux_amd64.zip
-          sudo mv terraform /usr/local/bin/
+          python-version: '3.9'
       
-      - name: Initialize Terraform
+      - name: Install dependencies
         run: |
-          cd terraform_repo
-          terraform init
+          python -m pip install --upgrade pip
+          pip install diagrams
 
-      - name: Generate Terraform Graph
+      - name: Generate Diagram with Diagrams as Code
         run: |
-          cd terraform_repo
-          terraform graph > ../terraform_repo/infra_diagram.dot
+          echo "
+          from diagrams import Diagram, Cluster
+          from diagrams.aws.compute import EC2
+          from diagrams.aws.database import RDS
+          from diagrams.aws.network import ELB
 
-      - name: Convert DOT to PNG
-        run: |
-          cd terraform_repo
-          dot -Tpng infra_diagram.dot -o infra_diagram.png
+          with Diagram('Infrastructure Diagram', show=False, filename='infra_diagram', outformat='png'):
+              lb = ELB('Load Balancer')
+              
+              with Cluster('Web Servers'):
+                  web1 = EC2('web1')
+                  web2 = EC2('web2')
+                  
+              with Cluster('Database Cluster'):
+                  db_primary = RDS('Primary DB')
+                  db_primary - [RDS('Replica DB1'), RDS('Replica DB2')]
 
-      - name: Move PNG to Repository Root
-        run: |
-          mv terraform_repo/infra_diagram.png .
+              lb >> web1
+              lb >> web2
+              web1 >> db_primary
+              web2 >> db_primary
+          " > generate_diagram.py
+          python generate_diagram.py
 
       - name: Commit and Push Diagram
         run: |
@@ -59,3 +62,4 @@ jobs:
         with:
           name: infra_diagram
           path: infra_diagram.png
+

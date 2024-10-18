@@ -145,9 +145,11 @@ jobs:
         run: |
           if [ -f "infra_diagram.png" ]; then
             echo "Diagrama generado exitosamente."
-          else:
+          else
             echo "Error: El archivo infra_diagram.png no fue generado."
             exit 1
+          fi
+
 
       - name: List files in the current directory
         run: ls -alh

@@ -31,7 +31,7 @@ jobs:
           sudo apt-get install -y graphviz
           python -m pip install --upgrade pip
           pip install diagrams python-hcl2
-          
+
       - name: Generate Diagram from Terraform Files
         run: |
           echo "
@@ -65,6 +65,8 @@ jobs:
               vpc_instances = []
               waf_instances = []
 
+              print('Recorriendo los archivos Terraform...')
+
               # Recorre archivos Terraform
               for root, _, files in os.walk('terraform_repo'):
                   for file in files:
@@ -73,10 +75,11 @@ jobs:
                           with open(os.path.join(root, file), 'r') as f:
                               try:
                                   terraform_data = hcl2.load(f)
+                                  print(f\"Contenido de {file}: {terraform_data}\")
                                   for resource in terraform_data.get('resource', []):
                                       for resource_type, instances in resource.items():
                                           for instance_name, instance_data in instances.items():
-                                              print(f\"Tipo de recurso: {resource_type} - Nombre: {instance_name}\")
+                                              print(f\"Tipo de recurso detectado: {resource_type} - Nombre: {instance_name}\")
                                               # Procesa los recursos según su tipo
                                               if resource_type == 'aws_instance':
                                                   ec2_instances.append(EC2(instance_name))
@@ -106,10 +109,14 @@ jobs:
                                                   vpc_instances.append(VPC(instance_name))
                                               elif resource_type == 'aws_waf':
                                                   waf_instances.append(WAF(instance_name))
+                                              else:
+                                                  print(f\"Recurso no soportado: {resource_type}\")
                               except Exception as e:
                                   print(f\"Error al cargar {file}: {e}\")
 
               # Agrupar recursos en clústeres
+              print('Agrupando recursos en clústeres...')
+
               with Cluster('Compute Instances'):
                   for instance in ec2_instances:
                       instance
@@ -155,6 +162,8 @@ jobs:
                       grafana
 
               # Conectar recursos
+              print('Conectando recursos...')
+              
               # Conectar balanceadores de carga con instancias EC2
               for elb in elb_instances:
                   for ec2 in ec2_instances:
@@ -195,6 +204,7 @@ jobs:
 
           " > generate_diagram.py
           python generate_diagram.py
+
       - name: Check if diagram was created
         run: |
           if [ -f "infra_diagram.png" ]; then
@@ -203,6 +213,7 @@ jobs:
             echo "Error: El archivo infra_diagram.png no fue generado."
             exit 1
           fi
+
       - name: List files in the current directory
         run: ls -alh
 
@@ -217,9 +228,10 @@ jobs:
           else
             echo "Error: infra_diagram.png no se generó."
             exit 1
-          fi
+
       - name: Upload Diagram as Artifact
         uses: actions/upload-artifact@v3
         with:
           name: infra_diagram
           path: infra_diagram.png
+

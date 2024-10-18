@@ -39,7 +39,7 @@ jobs:
           import hcl2
           from diagrams import Diagram, Cluster
           from diagrams.aws.compute import EC2
-          from diagrams.aws.database import RDS, Elasticache  # Importamos Elasticache desde el módulo de base de datos
+          from diagrams.aws.database import RDS, Elasticache
           from diagrams.aws.network import ELB, CloudFront, Route53
           from diagrams.aws.storage import S3, EFS
           from diagrams.aws.security import Shield, WAF
@@ -101,7 +101,7 @@ jobs:
               with Cluster('Storage and Cache'):
                   s3 = S3('Static Storage and Backup')
                   efs = EFS('Shared Storage')
-                  elasticache = Elasticache('Cache Service')  # Ahora Elasticache es importado correctamente
+                  elasticache = Elasticache('Cache Service')
   
               # Availability Zones
               with Cluster('Availability Zone 1'):
@@ -126,9 +126,18 @@ jobs:
               # Connections
               route53 >> cloudfront >> waf >> elb
               elb >> [web_ec2_az1, web_ec2_az2]
-              [web_ec2_az1, web_ec2_az2] >> [app_ec2_az1, app_ec2_az2]
-              [app_ec2_az1, app_ec2_az2] >> [rds_az1, rds_az2]
-              [web_ec2_az1, web_ec2_az2] >> s3
+              
+              # Conectar instancias web con las instancias de aplicaciones
+              for web_instance, app_instance in zip([web_ec2_az1, web_ec2_az2], [app_ec2_az1, app_ec2_az2]):
+                  web_instance >> app_instance
+              
+              # Conectar instancias de aplicaciones con las bases de datos
+              for app_instance, rds_instance in zip([app_ec2_az1, app_ec2_az2], [rds_az1, rds_az2]):
+                  app_instance >> rds_instance
+              
+              # Conectar instancias web con S3
+              for web_instance in [web_ec2_az1, web_ec2_az2]:
+                  web_instance >> s3
           " > generate_diagram.py
           python generate_diagram.py
 
@@ -160,4 +169,3 @@ jobs:
         with:
           name: infra_diagram
           path: infra_diagram.png
-

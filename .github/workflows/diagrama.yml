@@ -42,7 +42,7 @@ jobs:
           from diagrams.aws.database import RDS
           from diagrams.aws.network import ELB, CloudFront, Route53
           from diagrams.aws.storage import S3, EFS
-          from diagrams.aws.security import Firewall, Shield
+          from diagrams.aws.security import Shield, WAF  # Reemplazamos Firewall por WAF
           from diagrams.aws.network import VPC
           from diagrams.aws.network import NATGateway
           from diagrams.aws.network import InternetGateway
@@ -95,7 +95,7 @@ jobs:
               with Cluster('DNS and CDN'):
                   route53 = Route53('DNS service')
                   cloudfront = CloudFront('CDN')
-                  firewall = Firewall('Web Application Firewall')
+                  waf = WAF('Web Application Firewall')  # Aquí usamos WAF
                   shield = Shield('DDoS protection')
   
               # Storage and Cache
@@ -125,7 +125,7 @@ jobs:
               elb = ELB('Elastic Load Balancer')
   
               # Connections
-              route53 >> cloudfront >> firewall >> elb
+              route53 >> cloudfront >> waf >> elb
               elb >> [web_ec2_az1, web_ec2_az2]
               [web_ec2_az1, web_ec2_az2] >> [app_ec2_az1, app_ec2_az2]
               [app_ec2_az1, app_ec2_az2] >> [rds_az1, rds_az2]

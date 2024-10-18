@@ -1,1 +1,163 @@
-aaa
+name: Generate Infrastructure Diagram
+
+on:
+  push:
+    branches:
+      - DesarrolloApiBack
+
+jobs:
+  generate-diagram:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the main repository
+        uses: actions/checkout@v3
+
+      - name: Checkout the Terraform repository
+        uses: actions/checkout@v3
+        with:
+          repository: UPT-FAING-EPIS/proyecto-si8811a-2024-ii-u1-desarrollo-api-back
+          path: terraform_repo
+          ref: develop
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+          python -m pip install --upgrade pip
+          pip install diagrams python-hcl2
+          
+      - name: Generate Diagram from Terraform Files
+        run: |
+          echo "
+          import os
+          import hcl2
+          from diagrams import Diagram, Cluster
+          from diagrams.aws.compute import EC2
+          from diagrams.aws.database import RDS
+          from diagrams.aws.network import ELB, CloudFront, Route53, WAF
+          from diagrams.aws.storage import S3, EFS
+          from diagrams.aws.security import Shield
+          from diagrams.aws.network import VPC
+          from diagrams.aws.network import NATGateway
+          from diagrams.aws.network import InternetGateway
+          from diagrams.aws.storage import Elasticache
+          from diagrams.onprem.monitoring import Grafana
+          from diagrams.onprem.database import MongoDB
+
+          with Diagram('Infrastructure Diagram', show=False, filename='infra_diagram', outformat='png'):
+              ec2_instances_web_az1 = []
+              ec2_instances_web_az2 = []
+              ec2_instances_app_az1 = []
+              ec2_instances_app_az2 = []
+              db_instances = []
+              elb_instances = []
+              s3_buckets = []
+              security_groups = []
+              grafana_instances = []
+              mongodb_instances = []
+
+              # Recorrer archivos Terraform
+              for root, _, files in os.walk('terraform_repo'):
+                  for file in files:
+                      if file.endswith('.tf'):
+                          print(f\"Procesando archivo: {file}\")
+                          with open(os.path.join(root, file), 'r') as f:
+                              try:
+                                  terraform_data = hcl2.load(f)
+                                  for resource in terraform_data.get('resource', []):
+                                      for resource_type, instances in resource.items():
+                                          for instance_name, instance_data in instances.items():
+                                              if resource_type == 'aws_instance':
+                                                  if 'az-1' in instance_name:
+                                                      ec2_instances_web_az1.append(EC2(instance_name))
+                                                  elif 'az-2' in instance_name:
+                                                      ec2_instances_web_az2.append(EC2(instance_name))
+                                              elif resource_type == 'aws_db_instance':
+                                                  db_instances.append(RDS(instance_name))
+                                              elif resource_type == 'aws_elb':
+                                                  elb_instances.append(ELB(instance_name))
+                                              elif resource_type == 'aws_s3_bucket':
+                                                  s3_buckets.append(S3(instance_name))
+                                              elif resource_type == 'grafana_cloud_stack':
+                                                  grafana_instances.append(Grafana(instance_name))
+                                              elif resource_type == 'mongodbatlas_project' or resource_type == 'mongodbatlas_cluster':
+                                                  mongodb_instances.append(MongoDB(instance_name))
+                              except Exception as e:
+                                  print(f\"Error al cargar {file}: {e}\")
+          
+              # DNS and CDN
+              with Cluster('DNS and CDN'):
+                  route53 = Route53('DNS service')
+                  cloudfront = CloudFront('CDN')
+                  waf = WAF('Web Application Firewall')
+                  shield = Shield('DDoS protection')
+
+              # Storage and Cache
+              with Cluster('Storage and Cache'):
+                  s3 = S3('Static Storage and Backup')
+                  efs = EFS('Shared Storage')
+                  elasticache = Elasticache('Cache Service')
+
+              # Availability Zones
+              with Cluster('Availability Zone 1'):
+                  with Cluster('Public Subnet'):
+                      web_ec2_az1 = EC2('Web Servers AZ1')
+                  with Cluster('App Subnet'):
+                      app_ec2_az1 = EC2('App Servers AZ1')
+                  with Cluster('DB Subnet'):
+                      rds_az1 = RDS('Database Primary')
+
+              with Cluster('Availability Zone 2'):
+                  with Cluster('Public Subnet'):
+                      web_ec2_az2 = EC2('Web Servers AZ2')
+                  with Cluster('App Subnet'):
+                      app_ec2_az2 = EC2('App Servers AZ2')
+                  with Cluster('DB Subnet'):
+                      rds_az2 = RDS('Database Secondary')
+
+              # Load Balancer
+              elb = ELB('Elastic Load Balancer')
+
+              # Connections
+              route53 >> cloudfront >> waf >> elb
+              elb >> [web_ec2_az1, web_ec2_az2]
+              [web_ec2_az1, web_ec2_az2] >> [app_ec2_az1, app_ec2_az2]
+              [app_ec2_az1, app_ec2_az2] >> [rds_az1, rds_az2]
+              [web_ec2_az1, web_ec2_az2] >> s3
+          " > generate_diagram.py
+          python generate_diagram.py
+
+      - name: Check if diagram was created
+        run: |
+          if [ -f "infra_diagram.png" ]; then
+            echo "Diagrama generado exitosamente."
+          else:
+            echo "Error: El archivo infra_diagram.png no fue generado."
+            exit 1
+
+      - name: List files in the current directory
+        run: ls -alh
+
+      - name: Commit and Push Diagram
+        run: |
+          git config --local user.name "jesus huallpa"
+          git config --local user.email "jh2021071085@virtual.upt.pe"
+          if [ -f "infra_diagram.png" ]; then
+            git add infra_diagram.png
+            git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
+            git push origin DesarrolloApiBack --force
+          else:
+            echo "Error: infra_diagram.png no se generó."
+            exit 1
+
+      - name: Upload Diagram as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: infra_diagram
+          path: infra_diagram.png

@@ -149,8 +149,6 @@ jobs:
             echo "Error: El archivo infra_diagram.png no fue generado."
             exit 1
           fi
-
-
       - name: List files in the current directory
         run: ls -alh
 
@@ -162,10 +160,10 @@ jobs:
             git add infra_diagram.png
             git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
             git push origin DesarrolloApiBack --force
-          else:
+          else
             echo "Error: infra_diagram.png no se generó."
             exit 1
-
+          fi
       - name: Upload Diagram as Artifact
         uses: actions/upload-artifact@v3
         with:

@@ -221,13 +221,16 @@ jobs:
         run: |
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
+          
           if [ -f "infra_diagram.png" ]; then
-            git add infra_diagram.png
-            git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
-            git push origin DesarrolloApiBack --force
+              git add infra_diagram.png
+              git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
+              git push origin DesarrolloApiBack --force
           else
-            echo "Error: infra_diagram.png no se generó."
-            exit 1
+              echo "Error: infra_diagram.png no se generó."
+              exit 1
+          fi
+
 
       - name: Upload Diagram as Artifact
         uses: actions/upload-artifact@v3

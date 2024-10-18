@@ -88,8 +88,8 @@ jobs:
                                                   grafana_instances.append(Grafana(instance_name))
                                               elif resource_type == 'mongodbatlas_project' or resource_type == 'mongodbatlas_cluster':
                                                   mongodb_instances.append(MongoDB(instance_name))
-                      except Exception as e:
-                          print(f\"Error al cargar {file}: {e}\")
+                              except Exception as e:
+                                  print(f\"Error al cargar {file}: {e}\")
   
               # DNS and CDN
               with Cluster('DNS and CDN'):

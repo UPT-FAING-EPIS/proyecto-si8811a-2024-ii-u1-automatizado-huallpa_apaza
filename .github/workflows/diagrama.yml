@@ -39,14 +39,13 @@ jobs:
           import hcl2
           from diagrams import Diagram, Cluster
           from diagrams.aws.compute import EC2
-          from diagrams.aws.database import RDS
+          from diagrams.aws.database import RDS, Elasticache  # Importamos Elasticache desde el módulo de base de datos
           from diagrams.aws.network import ELB, CloudFront, Route53
           from diagrams.aws.storage import S3, EFS
-          from diagrams.aws.security import Shield, WAF  # Reemplazamos Firewall por WAF
+          from diagrams.aws.security import Shield, WAF
           from diagrams.aws.network import VPC
           from diagrams.aws.network import NATGateway
           from diagrams.aws.network import InternetGateway
-          from diagrams.aws.storage import Elasticache
           from diagrams.onprem.monitoring import Grafana
           from diagrams.onprem.database import MongoDB
   
@@ -95,14 +94,14 @@ jobs:
               with Cluster('DNS and CDN'):
                   route53 = Route53('DNS service')
                   cloudfront = CloudFront('CDN')
-                  waf = WAF('Web Application Firewall')  # Aquí usamos WAF
+                  waf = WAF('Web Application Firewall')
                   shield = Shield('DDoS protection')
   
               # Storage and Cache
               with Cluster('Storage and Cache'):
                   s3 = S3('Static Storage and Backup')
                   efs = EFS('Shared Storage')
-                  elasticache = Elasticache('Cache Service')
+                  elasticache = Elasticache('Cache Service')  # Ahora Elasticache es importado correctamente
   
               # Availability Zones
               with Cluster('Availability Zone 1'):
@@ -161,3 +160,4 @@ jobs:
         with:
           name: infra_diagram
           path: infra_diagram.png
+

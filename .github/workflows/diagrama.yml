@@ -119,15 +119,15 @@ jobs:
 
               # Resource Group con amazon_linux_2
               with Cluster('Resource Group'):
-                  amazon_linux_2 = EC2("amazon_linux_2")
+                  AWS = EC2("amazon_linux_2")
                   grafana_instance = Grafana("Grafana")
                   react_bucket = S3("react_app_bucket")
                   flutter_bucket = S3("flutter_app_bucket")
               
               # Conectando recursos dentro del Resource Group
-              amazon_linux_2 >> grafana_instance
-              amazon_linux_2 >> react_bucket
-              amazon_linux_2 >> flutter_bucket
+              AWS >> grafana_instance
+              AWS >> react_bucket
+              AWS >> flutter_bucket
           
               with Cluster('Compute Instances'):
                   for instance in ec2_instances:

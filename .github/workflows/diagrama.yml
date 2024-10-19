@@ -173,11 +173,11 @@ jobs:
               allow_http >> docker_host
           
               # Conectar balanceadores de carga con instancias EC2
-              for elb in elb_instances:
-                  elb >> docker_host
+              #for elb in elb_instances:
+              #    elb >> docker_host
           
-              for alb in alb_instances:
-                  alb >> docker_host
+              #for alb in alb_instances:
+              #    alb >> docker_host
           
               # Conectar EC2 a las bases de datos
               #for db in db_instances:

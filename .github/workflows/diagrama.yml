@@ -116,6 +116,18 @@ jobs:
             
               # Agrupar recursos en clústeres
               print('Agrupando recursos en clústeres...')
+
+              # Resource Group con amazon_linux_2
+              with Cluster('Resource Group'):
+                  amazon_linux_2 = EC2("amazon_linux_2")
+                  grafana_instance = Grafana("Grafana")
+                  react_bucket = S3("react_app_bucket")
+                  flutter_bucket = S3("flutter_app_bucket")
+              
+              # Conectando recursos dentro del Resource Group
+              amazon_linux_2 >> grafana_instance
+              amazon_linux_2 >> react_bucket
+              amazon_linux_2 >> flutter_bucket
           
               with Cluster('Compute Instances'):
                   for instance in ec2_instances:
@@ -222,7 +234,7 @@ jobs:
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
           
-          if [ -f "infra_diagram.png" ]; then
+          if [ -f "infra_diagram.png" ];then
               git add infra_diagram.png
               git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
               git push origin DesarrolloApiBack --force
@@ -236,4 +248,3 @@ jobs:
         with:
           name: infra_diagram
           path: infra_diagram.png
-

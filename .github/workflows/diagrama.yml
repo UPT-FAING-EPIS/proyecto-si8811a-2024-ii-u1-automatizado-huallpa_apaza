@@ -34,7 +34,7 @@ jobs:
 
       - name: Generate Diagram from Terraform Files
         run: |
-          echo "
+          echo '
           import os
           import hcl2
           from diagrams import Diagram, Cluster
@@ -48,7 +48,7 @@ jobs:
           from diagrams.onprem.database import MongoDB
           
           # Inicializa el diagrama
-          with Diagram('Infrastructure Diagram', show=False, filename='infra_diagram', outformat='png'):
+          with Diagram("Infrastructure Diagram", show=False, filename="infra_diagram", outformat="png"):
               # Listas para almacenar los recursos
               ec2_instances = []
               db_instances = []
@@ -68,57 +68,57 @@ jobs:
               s3_bucket_web_configs = []
               mongodb_users = []
           
-              print('Recorriendo los archivos Terraform...')
+              print("Recorriendo los archivos Terraform...")
           
               # Recorre archivos Terraform
-              for root, _, files in os.walk('terraform_repo'):
+              for root, _, files in os.walk("terraform_repo"):
                   for file in files:
-                      if file.endswith('.tf'):
+                      if file.endswith(".tf"):
                           print(f"Procesando archivo: {file}")
-                          with open(os.path.join(root, file), 'r') as f:
+                          with open(os.path.join(root, file), "r") as f:
                               try:
                                   terraform_data = hcl2.load(f)
                                   print(f"Contenido de {file}: {terraform_data}")
-                                  for resource in terraform_data.get('resource', []):
+                                  for resource in terraform_data.get("resource", []):
                                       for resource_type, instances in resource.items():
                                           for instance_name, instance_data in instances.items():
                                               print(f"Tipo de recurso detectado: {resource_type} - Nombre: {instance_name}")
                                               # Procesa los recursos según su tipo
                                               try:
-                                                  if resource_type == 'aws_instance':
+                                                  if resource_type == "aws_instance":
                                                       ec2_instances.append(EC2(instance_name))
-                                                  elif resource_type == 'aws_db_instance':
+                                                  elif resource_type == "aws_db_instance":
                                                       db_instances.append(RDS(instance_name))
-                                                  elif resource_type == 'aws_elb':
+                                                  elif resource_type == "aws_elb":
                                                       elb_instances.append(ELB(instance_name))
-                                                  elif resource_type == 'aws_alb':
+                                                  elif resource_type == "aws_alb":
                                                       alb_instances.append(ALB(instance_name))
-                                                  elif resource_type == 'aws_s3_bucket':
+                                                  elif resource_type == "aws_s3_bucket":
                                                       s3_buckets.append(S3(instance_name))
-                                                  elif resource_type == 'aws_lambda_function':
+                                                  elif resource_type == "aws_lambda_function":
                                                       lambda_instances.append(Lambda(instance_name))
-                                                  elif resource_type == 'aws_security_group':
+                                                  elif resource_type == "aws_security_group":
                                                       security_groups.append(Shield(instance_name))
-                                                  elif resource_type == 'grafana_cloud_stack':
+                                                  elif resource_type == "grafana_cloud_stack":
                                                       grafana_instances.append(Grafana(instance_name))
-                                                  elif resource_type in ['mongodbatlas_project', 'mongodbatlas_cluster']:
+                                                  elif resource_type in ["mongodbatlas_project", "mongodbatlas_cluster"]:
                                                       mongodb_instances.append(MongoDB(instance_name))
-                                                  elif resource_type == 'aws_nat_gateway':
+                                                  elif resource_type == "aws_nat_gateway":
                                                       nat_gateways.append(NATGateway(instance_name))
-                                                  elif resource_type == 'aws_internet_gateway':
+                                                  elif resource_type == "aws_internet_gateway":
                                                       internet_gateways.append(InternetGateway(instance_name))
-                                                  elif resource_type == 'aws_route53_zone':
+                                                  elif resource_type == "aws_route53_zone":
                                                       route53_instances.append(Route53(instance_name))
-                                                  elif resource_type == 'aws_vpc':
+                                                  elif resource_type == "aws_vpc":
                                                       vpc_instances.append(VPC(instance_name))
-                                                  elif resource_type == 'aws_waf':
+                                                  elif resource_type == "aws_waf":
                                                       waf_instances.append(WAF(instance_name))
                                                   # Nuevos recursos añadidos
-                                                  elif resource_type == 'aws_s3_bucket_policy':
+                                                  elif resource_type == "aws_s3_bucket_policy":
                                                       s3_bucket_policies.append(instance_name)
-                                                  elif resource_type == 'aws_s3_bucket_website_configuration':
+                                                  elif resource_type == "aws_s3_bucket_website_configuration":
                                                       s3_bucket_web_configs.append(instance_name)
-                                                  elif resource_type == 'mongodbatlas_database_user':
+                                                  elif resource_type == "mongodbatlas_database_user":
                                                       mongodb_users.append(instance_name)
                                                   else:
                                                       print(f"Recurso no soportado: {resource_type}")
@@ -128,11 +128,11 @@ jobs:
                                   print(f"Error al cargar {file}: {e}")
           
               # Agrupar recursos en clústeres
-              print('Agrupando recursos en clústeres...')
+              print("Agrupando recursos en clústeres...")
           
-              # Reemplazar 'amazon_linux_instance' con 'docker_host'
+              # Reemplazar "amazon_linux_instance" con "docker_host"
               try:
-                  with Cluster('Resource Group'):
+                  with Cluster("Resource Group"):
                       docker_host = EC2("docker_host")
                       grafana_instance = Grafana("my_stack")
                       react_bucket = S3("react_app_bucket")
@@ -145,47 +145,47 @@ jobs:
               except Exception as e:
                   print(f"Error al crear el Resource Group: {e}")
           
-              with Cluster('Compute Instances'):
+              with Cluster("Compute Instances"):
                   for instance in ec2_instances:
                       instance
           
-              with Cluster('Database Instances'):
+              with Cluster("Database Instances"):
                   for db in db_instances:
                       db
                   for mongo in mongodb_instances:
                       mongo
           
-              with Cluster('Load Balancers'):
+              with Cluster("Load Balancers"):
                   for elb in elb_instances:
                       elb
                   for alb in alb_instances:
                       alb
           
-              with Cluster('Storage'):
+              with Cluster("Storage"):
                   for bucket in s3_buckets:
                       bucket
           
-              with Cluster('Lambda Functions'):
+              with Cluster("Lambda Functions"):
                   for lambda_func in lambda_instances:
                       lambda_func
           
-              with Cluster('Security Groups'):
+              with Cluster("Security Groups"):
                   for sg in security_groups:
                       sg
           
-              with Cluster('Gateways'):
+              with Cluster("Gateways"):
                   for nat in nat_gateways:
                       nat
                   for igw in internet_gateways:
                       igw
           
-              with Cluster('DNS & CDN'):
+              with Cluster("DNS & CDN"):
                   for r53 in route53_instances:
                       r53
                   for waf in waf_instances:
                       waf
           
-              with Cluster('Monitoring'):
+              with Cluster("Monitoring"):
                   for grafana in grafana_instances:
                       grafana
           
@@ -195,7 +195,7 @@ jobs:
               print(f"MongoDB Users: {mongodb_users}")
           
               # Conectar recursos
-              print('Conectando recursos...')
+              print("Conectando recursos...")
           
               # Conectar balanceadores de carga con instancias EC2
               for elb in elb_instances:
@@ -233,8 +233,10 @@ jobs:
                   for db in db_instances:
                       grafana >> db
                   for mongo in mongodb_instances:
-                      grafana >> mongo                    
-                      python generate_diagram.py
+                      grafana >> mongo
+          ' > generate_diagram.py
+          python generate_diagram.py
+        
 
       - name: Check if diagram was created
         run: |

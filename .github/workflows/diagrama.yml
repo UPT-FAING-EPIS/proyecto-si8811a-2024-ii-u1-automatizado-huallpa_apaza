@@ -163,9 +163,9 @@ jobs:
                   cluster = MongoDB("cluster")
               
               # Conectar recursos
-              #docker_host >> react_bucket
-              #docker_host >> flutter_bucket
-              #docker_host >> grafana_instance
+              docker_host >> react_bucket
+              docker_host >> flutter_bucket
+              docker_host >> grafana_instance
           
               #grafana_instance >> project
               #grafana_instance >> cluster

@@ -117,17 +117,17 @@ jobs:
               # Agrupar recursos en clústeres
               print('Agrupando recursos en clústeres...')
 
-              # Resource Group con amazon_linux_2
+              # Resource Group con amazon_linux_instance
               with Cluster('Resource Group'):
-                  AWS = EC2("amazon_linux_2")
+                  amazon_linux_instance = EC2("amazon_linux_instance")
                   grafana_instance = Grafana("Grafana")
                   react_bucket = S3("react_app_bucket")
                   flutter_bucket = S3("flutter_app_bucket")
               
               # Conectando recursos dentro del Resource Group
-              AWS >> grafana_instance
-              AWS >> react_bucket
-              AWS >> flutter_bucket
+              amazon_linux_instance >> grafana_instance
+              amazon_linux_instance >> react_bucket
+              amazon_linux_instance >> flutter_bucket
           
               with Cluster('Compute Instances'):
                   for instance in ec2_instances:

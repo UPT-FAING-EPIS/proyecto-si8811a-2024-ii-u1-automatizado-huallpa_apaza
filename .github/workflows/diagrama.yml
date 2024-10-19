@@ -113,18 +113,17 @@ jobs:
                                                   print(f\"Recurso no soportado: {resource_type}\")
                               except Exception as e:
                                   print(f\"Error al cargar {file}: {e}\")
-            
+          
               # Agrupar recursos en clústeres
               print('Agrupando recursos en clústeres...')
-
+          
               # Resource Group con amazon_linux_instance
               with Cluster('Resource Group'):
                   amazon_linux_instance = EC2("amazon_linux_instance")
                   grafana_instance = Grafana("Grafana")
                   react_bucket = S3("react_app_bucket")
                   flutter_bucket = S3("flutter_app_bucket")
-              
-
+          
               # Conectando recursos dentro del Resource Group
               amazon_linux_instance >> grafana_instance
               amazon_linux_instance >> react_bucket
@@ -215,7 +214,7 @@ jobs:
                   for mongo in mongodb_instances:
                       grafana >> mongo
                     " > generate_diagram.py
-          python generate_diagram.py
+                    python generate_diagram.py
 
       - name: Check if diagram was created
         run: |

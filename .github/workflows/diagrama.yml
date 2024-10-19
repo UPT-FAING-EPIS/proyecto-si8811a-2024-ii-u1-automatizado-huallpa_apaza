@@ -180,28 +180,28 @@ jobs:
                   alb >> docker_host
           
               # Conectar EC2 a las bases de datos
-              for db in db_instances:
-                  docker_host >> db
+              #for db in db_instances:
+              #    docker_host >> db
           
-              for mongo in mongodb_instances:
-                  docker_host >> mongo
+              #for mongo in mongodb_instances:
+              #   docker_host >> mongo
           
               # Conectar instancias EC2 a S3
-              for bucket in s3_buckets:
-                  docker_host >> bucket
+              #for bucket in s3_buckets:
+              #    docker_host >> bucket
           
               # Conectar Lambda a S3
-              for lambda_func in lambda_instances:
-                  lambda_func >> s3_buckets
+              #for lambda_func in lambda_instances:
+              #    lambda_func >> s3_buckets
           
               # Conectar instancias EC2 a los grupos de seguridad
-              for sg in security_groups:
-                  sg >> docker_host
+              #for sg in security_groups:
+              #    sg >> docker_host
           
               # Conectar Grafana a bases de datos para monitoreo
               #for grafana in grafana_instances:
-                  #grafana >> db_instances
-                  #grafana >> mongodb_instances
+              #   grafana >> db_instances
+              #   grafana >> mongodb_instances
           ' > generate_diagram.py
           python generate_diagram.py
 

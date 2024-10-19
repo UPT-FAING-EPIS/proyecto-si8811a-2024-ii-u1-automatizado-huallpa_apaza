@@ -199,9 +199,9 @@ jobs:
                   sg >> docker_host
           
               # Conectar Grafana a bases de datos para monitoreo
-              for grafana in grafana_instances:
-                  grafana >> db_instances
-                  grafana >> mongodb_instances
+              #for grafana in grafana_instances:
+                  #grafana >> db_instances
+                  #grafana >> mongodb_instances
           ' > generate_diagram.py
           python generate_diagram.py
 

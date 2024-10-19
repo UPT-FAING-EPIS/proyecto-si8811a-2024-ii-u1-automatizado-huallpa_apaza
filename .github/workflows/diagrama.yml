@@ -64,6 +64,9 @@ jobs:
               route53_instances = []
               vpc_instances = []
               waf_instances = []
+              s3_bucket_policies = []
+              s3_bucket_web_configs = []
+              mongodb_users = []
           
               print('Recorriendo los archivos Terraform...')
           
@@ -71,15 +74,15 @@ jobs:
               for root, _, files in os.walk('terraform_repo'):
                   for file in files:
                       if file.endswith('.tf'):
-                          print(f\"Procesando archivo: {file}\")
+                          print(f"Procesando archivo: {file}")
                           with open(os.path.join(root, file), 'r') as f:
                               try:
                                   terraform_data = hcl2.load(f)
-                                  print(f\"Contenido de {file}: {terraform_data}\")
+                                  print(f"Contenido de {file}: {terraform_data}")
                                   for resource in terraform_data.get('resource', []):
                                       for resource_type, instances in resource.items():
                                           for instance_name, instance_data in instances.items():
-                                              print(f\"Tipo de recurso detectado: {resource_type} - Nombre: {instance_name}\")
+                                              print(f"Tipo de recurso detectado: {resource_type} - Nombre: {instance_name}")
                                               # Procesa los recursos según su tipo
                                               try:
                                                   if resource_type == 'aws_instance':
@@ -110,30 +113,37 @@ jobs:
                                                       vpc_instances.append(VPC(instance_name))
                                                   elif resource_type == 'aws_waf':
                                                       waf_instances.append(WAF(instance_name))
+                                                  # Nuevos recursos añadidos
+                                                  elif resource_type == 'aws_s3_bucket_policy':
+                                                      s3_bucket_policies.append(instance_name)
+                                                  elif resource_type == 'aws_s3_bucket_website_configuration':
+                                                      s3_bucket_web_configs.append(instance_name)
+                                                  elif resource_type == 'mongodbatlas_database_user':
+                                                      mongodb_users.append(instance_name)
                                                   else:
-                                                      print(f\"Recurso no soportado: {resource_type}\")
+                                                      print(f"Recurso no soportado: {resource_type}")
                                               except Exception as inner_e:
-                                                  print(f\"Error procesando recurso {instance_name} de tipo {resource_type}: {inner_e}\")
+                                                  print(f"Error procesando recurso {instance_name} de tipo {resource_type}: {inner_e}")
                               except Exception as e:
-                                  print(f\"Error al cargar {file}: {e}\")
+                                  print(f"Error al cargar {file}: {e}")
           
               # Agrupar recursos en clústeres
               print('Agrupando recursos en clústeres...')
           
-              # Resource Group con amazon_linux_instance
+              # Reemplazar 'amazon_linux_instance' con 'docker_host'
               try:
                   with Cluster('Resource Group'):
-                      amazon_linux_instance = EC2("amazon_linux_instance")
-                      grafana_instance = Grafana("Grafana")
+                      docker_host = EC2("docker_host")
+                      grafana_instance = Grafana("my_stack")
                       react_bucket = S3("react_app_bucket")
                       flutter_bucket = S3("flutter_app_bucket")
           
                   # Conectando recursos dentro del Resource Group
-                  amazon_linux_instance >> grafana_instance
-                  amazon_linux_instance >> react_bucket
-                  amazon_linux_instance >> flutter_bucket
+                  docker_host >> grafana_instance
+                  docker_host >> react_bucket
+                  docker_host >> flutter_bucket
               except Exception as e:
-                  print(f\"Error al crear el Resource Group: {e}\")
+                  print(f"Error al crear el Resource Group: {e}")
           
               with Cluster('Compute Instances'):
                   for instance in ec2_instances:
@@ -179,6 +189,11 @@ jobs:
                   for grafana in grafana_instances:
                       grafana
           
+              # Mostrar los recursos nuevos añadidos
+              print(f"S3 Bucket Policies: {s3_bucket_policies}")
+              print(f"S3 Bucket Website Configurations: {s3_bucket_web_configs}")
+              print(f"MongoDB Users: {mongodb_users}")
+          
               # Conectar recursos
               print('Conectando recursos...')
           
@@ -218,9 +233,8 @@ jobs:
                   for db in db_instances:
                       grafana >> db
                   for mongo in mongodb_instances:
-                      grafana >> mongo
-                    " > generate_diagram.py
-                    python generate_diagram.py
+                      grafana >> mongo                    
+                      python generate_diagram.py
 
       - name: Check if diagram was created
         run: |

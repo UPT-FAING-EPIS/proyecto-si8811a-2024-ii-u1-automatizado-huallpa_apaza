@@ -167,10 +167,10 @@ jobs:
               docker_host >> flutter_bucket
               docker_host >> grafana_instance
           
-              #grafana_instance >> project
-              #grafana_instance >> cluster
+              grafana_instance >> project
+              grafana_instance >> cluster
           
-              #allow_http >> docker_host
+              allow_http >> docker_host
           
               # Conectar balanceadores de carga con instancias EC2
               #for elb in elb_instances:

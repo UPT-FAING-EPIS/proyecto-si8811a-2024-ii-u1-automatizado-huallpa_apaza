@@ -113,10 +113,10 @@ jobs:
                                                   print(f\"Recurso no soportado: {resource_type}\")
                               except Exception as e:
                                   print(f\"Error al cargar {file}: {e}\")
-
+              
               # Agrupar recursos en clústeres
               print('Agrupando recursos en clústeres...')
-
+              
               with Cluster('Compute Instances'):
                   for instance in ec2_instances:
                       instance
@@ -201,7 +201,6 @@ jobs:
                       grafana >> db
                   for mongo in mongodb_instances:
                       grafana >> mongo
-
           " > generate_diagram.py
           python generate_diagram.py
 
@@ -230,7 +229,6 @@ jobs:
               echo "Error: infra_diagram.png no se generó."
               exit 1
           fi
-
 
       - name: Upload Diagram as Artifact
         uses: actions/upload-artifact@v3

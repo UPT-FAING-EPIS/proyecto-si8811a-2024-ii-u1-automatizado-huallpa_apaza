@@ -130,113 +130,70 @@ jobs:
               # Agrupar recursos en clústeres
               print("Agrupando recursos en clústeres...")
           
-              # Reemplazar "amazon_linux_instance" con "docker_host"
-              try:
-                  with Cluster("Resource Group"):
-                      docker_host = EC2("docker_host")
-                      grafana_instance = Grafana("my_stack")
-                      react_bucket = S3("react_app_bucket")
-                      flutter_bucket = S3("flutter_app_bucket")
-          
-                  # Conectando recursos dentro del Resource Group
-                  docker_host >> grafana_instance
-                  docker_host >> react_bucket
-                  docker_host >> flutter_bucket
-              except Exception as e:
-                  print(f"Error al crear el Resource Group: {e}")
-          
-              with Cluster("Compute Instances"):
-                  for instance in ec2_instances:
-                      instance
-          
-              with Cluster("Database Instances"):
-                  for db in db_instances:
-                      db
-                  for mongo in mongodb_instances:
-                      mongo
-          
-              with Cluster("Load Balancers"):
-                  for elb in elb_instances:
-                      elb
-                  for alb in alb_instances:
-                      alb
-          
+              # Clúster para Computación (Instancias EC2)
+              with Cluster("Compute"):
+                  docker_host = EC2("docker_host")
+              
+              # Clúster para Almacenamiento (Buckets S3)
               with Cluster("Storage"):
-                  for bucket in s3_buckets:
-                      bucket
-          
-              with Cluster("Lambda Functions"):
-                  for lambda_func in lambda_instances:
-                      lambda_func
-          
-              with Cluster("Security Groups"):
-                  for sg in security_groups:
-                      sg
-          
-              with Cluster("Gateways"):
-                  for nat in nat_gateways:
-                      nat
-                  for igw in internet_gateways:
-                      igw
-          
-              with Cluster("DNS & CDN"):
-                  for r53 in route53_instances:
-                      r53
-                  for waf in waf_instances:
-                      waf
-          
+                  react_bucket = S3("react_app_bucket")
+                  flutter_bucket = S3("flutter_app_bucket")
+              
+              # Clúster para Monitoreo (Grafana)
               with Cluster("Monitoring"):
-                  for grafana in grafana_instances:
-                      grafana
+                  grafana_instance = Grafana("my_stack")
+              
+              # Clúster para Seguridad (Grupos de seguridad)
+              with Cluster("Security"):
+                  allow_http = Shield("allow_http")
           
-              # Mostrar los recursos nuevos añadidos
-              print(f"S3 Bucket Policies: {s3_bucket_policies}")
-              print(f"S3 Bucket Website Configurations: {s3_bucket_web_configs}")
-              print(f"MongoDB Users: {mongodb_users}")
-          
+              # Clúster para Bases de Datos
+              with Cluster("Database"):
+                  project = MongoDB("project")
+                  cluster = MongoDB("cluster")
+              
               # Conectar recursos
-              print("Conectando recursos...")
+              docker_host >> react_bucket
+              docker_host >> flutter_bucket
+              docker_host >> grafana_instance
+          
+              grafana_instance >> project
+              grafana_instance >> cluster
+          
+              allow_http >> docker_host
           
               # Conectar balanceadores de carga con instancias EC2
               for elb in elb_instances:
-                  for ec2 in ec2_instances:
-                      elb >> ec2
+                  elb >> docker_host
           
               for alb in alb_instances:
-                  for ec2 in ec2_instances:
-                      alb >> ec2
+                  alb >> docker_host
           
               # Conectar EC2 a las bases de datos
-              for ec2 in ec2_instances:
-                  for db in db_instances:
-                      ec2 >> db
-                  for mongo in mongodb_instances:
-                      ec2 >> mongo
+              for db in db_instances:
+                  docker_host >> db
+          
+              for mongo in mongodb_instances:
+                  docker_host >> mongo
           
               # Conectar instancias EC2 a S3
-              for ec2 in ec2_instances:
-                  for bucket in s3_buckets:
-                      ec2 >> bucket
+              for bucket in s3_buckets:
+                  docker_host >> bucket
           
               # Conectar Lambda a S3
               for lambda_func in lambda_instances:
-                  for bucket in s3_buckets:
-                      lambda_func >> bucket
+                  lambda_func >> s3_buckets
           
               # Conectar instancias EC2 a los grupos de seguridad
-              for ec2 in ec2_instances:
-                  for sg in security_groups:
-                      sg >> ec2
+              for sg in security_groups:
+                  sg >> docker_host
           
               # Conectar Grafana a bases de datos para monitoreo
               for grafana in grafana_instances:
-                  for db in db_instances:
-                      grafana >> db
-                  for mongo in mongodb_instances:
-                      grafana >> mongo
+                  grafana >> db_instances
+                  grafana >> mongodb_instances
           ' > generate_diagram.py
           python generate_diagram.py
-        
 
       - name: Check if diagram was created
         run: |

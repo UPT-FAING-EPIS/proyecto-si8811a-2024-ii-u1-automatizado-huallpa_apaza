@@ -69,7 +69,7 @@ jobs:
               mongodb_users = []
           
               print("Recorriendo los archivos Terraform...")
-          
+
               # Recorre archivos Terraform
               for root, _, files in os.walk("terraform_repo"):
                   for file in files:
@@ -139,6 +139,16 @@ jobs:
                   react_bucket = S3("react_app_bucket")
                   flutter_bucket = S3("flutter_app_bucket")
               
+              # Clúster para Políticas de S3
+              with Cluster("S3 Bucket Policies"):
+                  for policy in s3_bucket_policies:
+                      S3(policy)
+
+              # Clúster para Configuración Web de S3
+              with Cluster("S3 Web Configurations"):
+                  for web_config in s3_bucket_web_configs:
+                      S3(web_config)
+
               # Clúster para Monitoreo (Grafana)
               with Cluster("Monitoring"):
                   grafana_instance = Grafana("my_stack")
@@ -212,7 +222,7 @@ jobs:
           git config --local user.name "jesus huallpa"
           git config --local user.email "jh2021071085@virtual.upt.pe"
           
-          if [ -f "infra_diagram.png" ]; then
+          if [ -f "infra_diagram.png"] ; then
               git add infra_diagram.png
               git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
               git push origin DesarrolloApiBack --force

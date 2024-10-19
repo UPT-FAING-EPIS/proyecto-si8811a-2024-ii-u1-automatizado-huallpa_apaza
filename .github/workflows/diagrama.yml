@@ -124,6 +124,7 @@ jobs:
                   react_bucket = S3("react_app_bucket")
                   flutter_bucket = S3("flutter_app_bucket")
               
+
               # Conectando recursos dentro del Resource Group
               amazon_linux_instance >> grafana_instance
               amazon_linux_instance >> react_bucket

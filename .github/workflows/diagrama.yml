@@ -213,9 +213,8 @@ jobs:
                       grafana >> db
                   for mongo in mongodb_instances:
                       grafana >> mongo
-          
                     " > generate_diagram.py
-                    python generate_diagram.py
+          python generate_diagram.py
 
       - name: Check if diagram was created
         run: |

@@ -1,0 +1,10 @@
+microsoftentraid
+
+registro de aplicacion
+
+solo cuentas de directorio adminitrativo
+
+autentificacion + plataforma de aplicacion mobil escritorio
+
+
+

@@ -1,0 +1,55 @@
+digraph G {
+  rankdir = "RL";
+  node [shape = rect, fontname = "sans-serif", style=filled, fillcolor=lightgrey];
+  edge [color=gray, arrowsize=0.8];
+
+  "azurerm_resource_group.main" [label="🔷 Resource Group", fillcolor=lightblue];
+  
+  subgraph "cluster_module.backend_api" {
+    label = "Backend API"
+    fontname = "sans-serif"
+    style=filled;
+    color=lightyellow;
+    
+    "module.backend_api.azurerm_container_registry.backend" [label="📦 Container Registry", fillcolor=lightgreen];
+    "module.backend_api.azurerm_kubernetes_cluster.backend" [label="☸️ Kubernetes Cluster", fillcolor=lightgreen];
+    "module.backend_api.azurerm_role_assignment.aks_acr" [label="🔑 Role Assignment", fillcolor=lightgreen];
+  }
+
+  subgraph "cluster_module.mobile_app" {
+    label = "Mobile App"
+    fontname = "sans-serif"
+    style=filled;
+    color=lightcoral;
+    
+    "module.mobile_app.azurerm_cdn_endpoint.flutter_app" [label="🌐 CDN Endpoint", fillcolor=lightpink];
+    "module.mobile_app.azurerm_cdn_profile.flutter_app" [label="📄 CDN Profile", fillcolor=lightpink];
+    "module.mobile_app.azurerm_storage_account.flutter_app" [label="💾 Storage Account", fillcolor=lightpink];
+  }
+
+  subgraph "cluster_module.web_app" {
+    label = "Web App"
+    fontname = "sans-serif"
+    style=filled;
+    color=lightcyan;
+    
+    "module.web_app.azurerm_cdn_endpoint.react_app" [label="🌐 CDN Endpoint", fillcolor=lightyellow];
+    "module.web_app.azurerm_cdn_profile.react_app" [label="📄 CDN Profile", fillcolor=lightyellow];
+    "module.web_app.azurerm_storage_account.react_app" [label="💾 Storage Account", fillcolor=lightyellow];
+  }
+
+  "module.backend_api.azurerm_container_registry.backend" -> "azurerm_resource_group.main";
+  "module.backend_api.azurerm_kubernetes_cluster.backend" -> "azurerm_resource_group.main";
+  "module.backend_api.azurerm_role_assignment.aks_acr" -> "module.backend_api.azurerm_container_registry.backend";
+  "module.backend_api.azurerm_role_assignment.aks_acr" -> "module.backend_api.azurerm_kubernetes_cluster.backend";
+  
+  "module.mobile_app.azurerm_cdn_endpoint.flutter_app" -> "module.mobile_app.azurerm_cdn_profile.flutter_app";
+  "module.mobile_app.azurerm_cdn_endpoint.flutter_app" -> "module.mobile_app.azurerm_storage_account.flutter_app";
+  "module.mobile_app.azurerm_cdn_profile.flutter_app" -> "azurerm_resource_group.main";
+  "module.mobile_app.azurerm_storage_account.flutter_app" -> "azurerm_resource_group.main";
+  
+  "module.web_app.azurerm_cdn_endpoint.react_app" -> "module.web_app.azurerm_cdn_profile.react_app";
+  "module.web_app.azurerm_cdn_endpoint.react_app" -> "module.web_app.azurerm_storage_account.react_app";
+  "module.web_app.azurerm_cdn_profile.react_app" -> "azurerm_resource_group.main";
+  "module.web_app.azurerm_storage_account.react_app" -> "azurerm_resource_group.main";
+}

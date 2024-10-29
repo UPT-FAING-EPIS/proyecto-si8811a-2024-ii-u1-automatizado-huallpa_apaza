@@ -1,4 +1,4 @@
-terraform {
+terraform { 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -6,7 +6,7 @@ terraform {
     }
     mongodbatlas = {
       source  = "mongodb/mongodbatlas"
-      version = "~> 1.0"
+      version = "~> 1.10.0"
     }
     grafana = {
       source  = "grafana/grafana"
@@ -15,19 +15,24 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = var.aws_region
-}
+# Proveedor de AWS
+# provider "aws" {
+#   region = "us-east-1"
+# }
 
+# Proveedor de MongoDB Atlas
 provider "mongodbatlas" {
   public_key  = var.mongodb_atlas_public_key
   private_key = var.mongodb_atlas_private_key
 }
 
+# Proveedor de Grafana (con credenciales API y URL)
 provider "grafana" {
-  cloud_api_key = var.grafana_cloud_api_key
+  auth = var.grafana_auth
+  url  = var.grafana_url
 }
 
+# Módulo de Grafana
 module "grafana_resources" {
   source = "./modules/grafana"
   
@@ -36,6 +41,9 @@ module "grafana_resources" {
   }
 }
 
+
+
+# Módulo de MongoDB
 module "mongodb" {
   source = "./modules/mongodb"
 
@@ -52,27 +60,30 @@ module "mongodb" {
   database_name = var.mongodb_database_name
 }
 
-module "web_app" {
-  source = "./modules/web_app"
-  
-  app_bucket_name = var.react_app_bucket_name
-  environment     = var.environment
-}
+# Módulo de la aplicación web (React)
+# module "web_app" {
+#   source = "./modules/web_app"
+#   
+#   app_bucket_name = var.react_app_bucket_name
+#   environment     = var.environment
+# }
 
-module "mobile_app" {
-  source = "./modules/mobile_app"
-  
-  app_bucket_name = var.flutter_app_bucket_name
-  environment     = var.environment
-}
+# Módulo de la aplicación móvil (Flutter)
+# module "mobile_app" {
+#   source = "./modules/mobile_app"
+#   
+#   app_bucket_name = var.flutter_app_bucket_name
+#   environment     = var.environment
+# }
 
-module "docker_host" {
-  source = "./modules/docker_host"
-  
-  environment = var.environment
-  key_name    = var.ec2_key_name
-  backend_images = [
-    "josueamayatorres/api:v1",
-    "palbertt/automatizacion:api2-v1.0.0"
-  ]
-}
+# Módulo del host Docker
+# module "docker_host" {
+#   source = "./modules/docker_host"
+#   
+#   environment   = var.environment
+#   key_name      = var.ec2_key_name
+#   backend_images = [
+#     "josueamayatorres/api",
+#     "palbertt/automatizacion"
+#   ]
+# }

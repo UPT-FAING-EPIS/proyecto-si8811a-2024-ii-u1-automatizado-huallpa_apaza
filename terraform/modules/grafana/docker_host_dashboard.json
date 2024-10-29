@@ -1,0 +1,54 @@
+{
+    "annotations": {
+      "list": []
+    },
+    "editable": true,
+    "graphTooltip": 0,
+    "panels": [
+      {
+        "datasource": "Docker",
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "options": {
+          "orientation": "horizontal"
+        },
+        "title": "Docker CPU Usage",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "Docker",
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "options": {
+          "orientation": "horizontal"
+        },
+        "title": "Docker Memory Usage",
+        "type": "timeseries"
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 30,
+    "style": "dark",
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "title": "Docker Host Dashboard"
+  }
+  

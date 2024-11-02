@@ -219,8 +219,8 @@ jobs:
 
       - name: Commit and Push Diagram
         run: |
-          git config --local user.name "jesus huallpa"
-          git config --local user.email "jh2021071085@virtual.upt.pe"
+          git config --local user.name "AlbertApaza"
+          git config --local user.email "aa2021071075@virtual.upt.pe"
             
           if [ -f "infra_diagram.png" ]; then
               git add infra_diagram.png

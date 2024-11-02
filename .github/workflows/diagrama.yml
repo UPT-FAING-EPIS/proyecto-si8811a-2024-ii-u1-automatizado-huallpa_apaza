@@ -37,40 +37,82 @@ jobs:
           echo '
           import os
           import hcl2
-          from diagrams import Diagram, Cluster
+          from diagrams import Diagram, Cluster, Edge
           from diagrams.aws.compute import EC2, Lambda
           from diagrams.aws.database import RDS, Elasticache
-          from diagrams.aws.network import ELB, ALB, Route53
+          from diagrams.aws.network import ELB, ALB, Route53, APIGateway
           from diagrams.aws.storage import S3
           from diagrams.aws.security import Shield, WAF
           from diagrams.aws.network import VPC, InternetGateway, NATGateway
           from diagrams.onprem.monitoring import Grafana
           from diagrams.onprem.database import MongoDB
+          from diagrams.programming.framework import React, Flutter
           
-          # Inicializa el diagrama
-          with Diagram("Infrastructure Diagram", show=False, filename="infra_diagram", outformat="png"):
-              # Listas para almacenar los recursos
-              ec2_instances = []
-              db_instances = []
-              elb_instances = []
-              alb_instances = []
-              s3_buckets = []
-              lambda_instances = []
-              security_groups = []
-              grafana_instances = []
-              mongodb_instances = []
-              nat_gateways = []
-              internet_gateways = []
-              route53_instances = []
-              vpc_instances = []
-              waf_instances = []
-              s3_bucket_policies = []
-              s3_bucket_web_configs = []
-              mongodb_users = []
+          # Diccionario para mantener referencia de recursos
+          resources = {}
           
+          def create_or_get_resource(resource_type, name, resource_class):
+              key = f"{resource_type}_{name}"
+              if key not in resources:
+                  resources[key] = resource_class(name)
+              return resources[key]
+          
+          with Diagram("Infrastructure Diagram", show=False, filename="infra_diagram", outformat="png", direction="TB"):
+              
+              # Cluster principal de AWS
+              with Cluster("AWS Infrastructure"):
+                  
+                  # Frontend Cluster
+                  with Cluster("Frontend Applications"):
+                      react_app = React("React Frontend")
+                      flutter_app = Flutter("Flutter Frontend")
+                      
+                      with Cluster("S3 Buckets"):
+                          react_bucket = S3("react_app_bucket")
+                          flutter_bucket = S3("flutter_app_bucket")
+                  
+                  # Backend Cluster
+                  with Cluster("Backend Services"):
+                      api_gateway = APIGateway("API Gateway")
+                      
+                      with Cluster("Compute Resources"):
+                          docker_host = EC2("docker_host")
+                          security_group = Shield("allow_http")
+                  
+                  # Database Cluster
+                  with Cluster("Database Layer"):
+                      with Cluster("MongoDB Atlas"):
+                          mongo_project = MongoDB("project")
+                          mongo_cluster = MongoDB("cluster")
+                          mongo_user = MongoDB("database_user")
+              
+              # Monitoring Cluster
+              with Cluster("Monitoring"):
+                  grafana = Grafana("Grafana Cloud Stack")
+          
+              # Frontend Connections
+              react_app >> Edge(color="blue", style="dashed") >> react_bucket
+              flutter_app >> Edge(color="blue", style="dashed") >> flutter_bucket
+              
+              # API Gateway Connections
+              react_bucket >> Edge(color="green") >> api_gateway
+              flutter_bucket >> Edge(color="green") >> api_gateway
+              
+              # Backend Connections
+              api_gateway >> Edge(color="red") >> docker_host
+              security_group >> Edge(color="orange", style="dotted") >> docker_host
+              
+              # Database Connections
+              docker_host >> Edge(color="purple") >> mongo_cluster
+              mongo_project - Edge(color="gray") - mongo_cluster
+              mongo_cluster - Edge(color="gray") - mongo_user
+              
+              # Monitoring Connections
+              grafana >> Edge(color="yellow", style="dotted") >> docker_host
+              grafana >> Edge(color="yellow", style="dotted") >> mongo_cluster
+          
+          def process_terraform_files():
               print("Recorriendo los archivos Terraform...")
-
-              # Recorre archivos Terraform
               for root, _, files in os.walk("terraform_repo"):
                   for file in files:
                       if file.endswith(".tf"):
@@ -78,130 +120,21 @@ jobs:
                           with open(os.path.join(root, file), "r") as f:
                               try:
                                   terraform_data = hcl2.load(f)
-                                  print(f"Contenido de {file}: {terraform_data}")
-                                  for resource in terraform_data.get("resource", []):
-                                      for resource_type, instances in resource.items():
-                                          for instance_name, instance_data in instances.items():
-                                              print(f"Tipo de recurso detectado: {resource_type} - Nombre: {instance_name}")
-                                              # Procesa los recursos según su tipo
-                                              try:
-                                                  if resource_type == "aws_instance":
-                                                      ec2_instances.append(EC2(instance_name))
-                                                  elif resource_type == "aws_db_instance":
-                                                      db_instances.append(RDS(instance_name))
-                                                  elif resource_type == "aws_elb":
-                                                      elb_instances.append(ELB(instance_name))
-                                                  elif resource_type == "aws_alb":
-                                                      alb_instances.append(ALB(instance_name))
-                                                  elif resource_type == "aws_s3_bucket":
-                                                      s3_buckets.append(S3(instance_name))
-                                                  elif resource_type == "aws_lambda_function":
-                                                      lambda_instances.append(Lambda(instance_name))
-                                                  elif resource_type == "aws_security_group":
-                                                      security_groups.append(Shield(instance_name))
-                                                  elif resource_type == "grafana_cloud_stack":
-                                                      grafana_instances.append(Grafana(instance_name))
-                                                  elif resource_type in ["mongodbatlas_project", "mongodbatlas_cluster"]:
-                                                      mongodb_instances.append(MongoDB(instance_name))
-                                                  elif resource_type == "aws_nat_gateway":
-                                                      nat_gateways.append(NATGateway(instance_name))
-                                                  elif resource_type == "aws_internet_gateway":
-                                                      internet_gateways.append(InternetGateway(instance_name))
-                                                  elif resource_type == "aws_route53_zone":
-                                                      route53_instances.append(Route53(instance_name))
-                                                  elif resource_type == "aws_vpc":
-                                                      vpc_instances.append(VPC(instance_name))
-                                                  elif resource_type == "aws_waf":
-                                                      waf_instances.append(WAF(instance_name))
-                                                  # Nuevos recursos añadidos
-                                                  elif resource_type == "aws_s3_bucket_policy":
-                                                      s3_bucket_policies.append(instance_name)
-                                                  elif resource_type == "aws_s3_bucket_website_configuration":
-                                                      s3_bucket_web_configs.append(instance_name)
-                                                  elif resource_type == "mongodbatlas_database_user":
-                                                      mongodb_users.append(instance_name)
-                                                  else:
-                                                      print(f"Recurso no soportado: {resource_type}")
-                                              except Exception as inner_e:
-                                                  print(f"Error procesando recurso {instance_name} de tipo {resource_type}: {inner_e}")
+                                  process_resources(terraform_data)
                               except Exception as e:
-                                  print(f"Error al cargar {file}: {e}")
+                                  print(f"Error al procesar {file}: {e}")
           
-              # Agrupar recursos en clústeres
-              print("Agrupando recursos en clústeres...")
-          
-              # Clúster para Computación (Instancias EC2)
-              with Cluster("Compute"):
-                  docker_host = EC2("docker_host")
+          def process_resources(terraform_data):
+              if "resource" not in terraform_data:
+                  return
               
-              # Clúster para Almacenamiento (Buckets S3)
-              with Cluster("Storage"):
-                  react_bucket = S3("react_app_bucket")
-                  flutter_bucket = S3("flutter_app_bucket")
-              
-              # Clúster para Políticas de S3
-              with Cluster("S3 Bucket Policies"):
-                  for policy in s3_bucket_policies:
-                      S3(policy)
-
-              # Clúster para Configuración Web de S3
-              with Cluster("S3 Web Configurations"):
-                  for web_config in s3_bucket_web_configs:
-                      S3(web_config)
-
-              # Clúster para Monitoreo (Grafana)
-              with Cluster("Monitoring"):
-                  grafana_instance = Grafana("my_stack")
-              
-              # Clúster para Seguridad (Grupos de seguridad)
-              with Cluster("Security"):
-                  allow_http = Shield("allow_http")
+              for resource in terraform_data["resource"]:
+                  for resource_type, instances in resource.items():
+                      for instance_name, _ in instances.items():
+                          print(f"Recurso encontrado: {resource_type} - {instance_name}")
           
-              # Clúster para Bases de Datos
-              with Cluster("Database"):
-                  project = MongoDB("project")
-                  cluster = MongoDB("cluster")
-              
-              # Conectar recursos
-              docker_host >> react_bucket
-              docker_host >> flutter_bucket
-              docker_host >> grafana_instance
-          
-              grafana_instance >> project
-              grafana_instance >> cluster
-          
-              allow_http >> docker_host
-          
-              # Conectar balanceadores de carga con instancias EC2
-              for elb in elb_instances:
-                  elb >> docker_host
-          
-              for alb in alb_instances:
-                  alb >> docker_host
-          
-              # Conectar EC2 a las bases de datos
-              for db in db_instances:
-                  docker_host >> db
-          
-              for mongo in mongodb_instances:
-                  docker_host >> mongo
-          
-              # Conectar instancias EC2 a S3
-              for bucket in s3_buckets:
-                  docker_host >> bucket
-          
-              # Conectar Lambda a S3
-              for lambda_func in lambda_instances:
-                  lambda_func >> s3_buckets
-          
-              # Conectar instancias EC2 a los grupos de seguridad
-              for sg in security_groups:
-                  sg >> docker_host
-          
-              # Conectar Grafana a bases de datos para monitoreo
-              for grafana in grafana_instances:
-                  grafana >> db_instances
-                  grafana >> mongodb_instances
+          if __name__ == "__main__":
+              process_terraform_files()
           ' > generate_diagram.py
           python generate_diagram.py
 
@@ -214,23 +147,19 @@ jobs:
             exit 1
           fi
 
-      - name: List files in the current directory
-        run: ls -alh
-
       - name: Commit and Push Diagram
         run: |
           git config --local user.name "AlbertApaza"
           git config --local user.email "aa2021071075@virtual.upt.pe"
-            
+          
           if [ -f "infra_diagram.png" ]; then
               git add infra_diagram.png
-              git commit -m "Actualizar diagrama de infraestructura en PNG" || echo "No hay cambios para commit"
+              git commit -m "Actualizar diagrama de infraestructura [skip ci]" || echo "No hay cambios para commit"
               git push origin DesarrolloApiBack --force
           else
               echo "Error: infra_diagram.png no se generó."
               exit 1
           fi
-
 
       - name: Upload Diagram as Artifact
         uses: actions/upload-artifact@v3

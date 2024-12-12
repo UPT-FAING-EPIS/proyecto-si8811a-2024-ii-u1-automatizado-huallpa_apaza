@@ -5,7 +5,7 @@ En esta rama se generan los diagramas de infraestructura del repositorio proyect
 ## Diagrama de Infraestructura
 ![Diagrama de Infraestructura](Brainboarddiagrama.png)
 
-![Diagrama](infra.png)
+![Diagrama](infra_diagram.png)
 
 ## Archivos Terraform Analizados
 - terraform_repo/variables.tf

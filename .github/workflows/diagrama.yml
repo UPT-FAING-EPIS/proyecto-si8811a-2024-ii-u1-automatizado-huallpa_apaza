@@ -36,79 +36,107 @@ jobs:
         run: |
           echo '
           import os
-          from diagrams import Diagram, Cluster, Node
-          from diagrams.aws.compute import EC2
-          from diagrams.aws.database import RDS
-          from diagrams.aws.network import VPC
+          import hcl2
+          from diagrams import Diagram, Cluster, Edge
+          from diagrams.aws.compute import EC2, Lambda
+          from diagrams.aws.database import RDS, Elasticache
+          from diagrams.aws.network import ELB, ALB, Route53, APIGateway
+          from diagrams.aws.storage import S3
+          from diagrams.aws.security import Shield, WAF
+          from diagrams.aws.network import VPC, InternetGateway, NATGateway
+          from diagrams.onprem.monitoring import Grafana
+          from diagrams.onprem.database import MongoDB
+          from diagrams.programming.framework import React, Flutter
           
-          # Diccionario para almacenar los recursos generados
+          # Diccionario para mantener referencia de recursos
           resources = {}
           
-          # Diccionario que asocia tipos de recursos con clases de Diagrams
-          resource_classes = {
-              "aws_instance": EC2,
-              "aws_db_instance": RDS,
-              "aws_vpc": VPC,
-              "aws_security_group": Node,  # Uso de Node como representación genérica
-          }
-          
-          # Crear o recuperar un recurso
-          def create_or_get_resource(resource_type, name):
+          def create_or_get_resource(resource_type, name, resource_class):
               key = f"{resource_type}_{name}"
               if key not in resources:
-                  resource_class = resource_classes.get(resource_type, Node)  # Por defecto, usa Node si no está definido
                   resources[key] = resource_class(name)
               return resources[key]
           
-          # Procesar todos los archivos Terraform en el directorio
-          def process_terraform_files(terraform_dir):
-              for root, _, files in os.walk(terraform_dir):
+          with Diagram("Infrastructure Diagram", show=False, filename="infra_diagram", outformat="png", direction="TB"):
+              
+              # Cluster principal de AWS
+              with Cluster("AWS Infrastructure"):
+                  
+                  # Frontend Cluster
+                  with Cluster("Frontend Applications"):
+                      react_app = React("React Frontend")
+                      flutter_app = Flutter("Flutter Frontend")
+                      
+                      with Cluster("S3 Buckets"):
+                          react_bucket = S3("react_app_bucket")
+                          flutter_bucket = S3("flutter_app_bucket")
+                  
+                  # Backend Cluster
+                  with Cluster("Backend Services"):
+                      api_gateway = APIGateway("API Gateway")
+                      
+                      with Cluster("Compute Resources"):
+                          docker_host = EC2("docker_host")
+                          security_group = Shield("allow_http")
+                  
+                  # Database Cluster
+                  with Cluster("Database Layer"):
+                      with Cluster("MongoDB Atlas"):
+                          mongo_project = MongoDB("project")
+                          mongo_cluster = MongoDB("cluster")
+                          mongo_user = MongoDB("database_user")
+              
+              # Monitoring Cluster
+              with Cluster("Monitoring"):
+                  grafana = Grafana("Grafana Cloud Stack")
+          
+              # Frontend Connections
+              react_app >> Edge(color="blue", style="dashed") >> react_bucket
+              flutter_app >> Edge(color="blue", style="dashed") >> flutter_bucket
+              
+              # API Gateway Connections
+              react_bucket >> Edge(color="green") >> api_gateway
+              flutter_bucket >> Edge(color="green") >> api_gateway
+              
+              # Backend Connections
+              api_gateway >> Edge(color="red") >> docker_host
+              security_group >> Edge(color="orange", style="dotted") >> docker_host
+              
+              # Database Connections
+              docker_host >> Edge(color="purple") >> mongo_cluster
+              mongo_project - Edge(color="gray") - mongo_cluster
+              mongo_cluster - Edge(color="gray") - mongo_user
+              
+              # Monitoring Connections
+              grafana >> Edge(color="yellow", style="dotted") >> docker_host
+              grafana >> Edge(color="yellow", style="dotted") >> mongo_cluster
+          
+          def process_terraform_files():
+              print("Recorriendo los archivos Terraform...")
+              for root, _, files in os.walk("terraform_repo"):
                   for file in files:
                       if file.endswith(".tf"):
-                          file_path = os.path.join(root, file)
-                          print(f"Procesando archivo Terraform: {file_path}")
-                          with open(file_path, "r") as f:
+                          print(f"Procesando archivo: {file}")
+                          with open(os.path.join(root, file), "r") as f:
                               try:
                                   terraform_data = hcl2.load(f)
                                   process_resources(terraform_data)
                               except Exception as e:
                                   print(f"Error al procesar {file}: {e}")
           
-          # Procesar los recursos definidos en un archivo Terraform
           def process_resources(terraform_data):
               if "resource" not in terraform_data:
-                  print("No se encontraron recursos en el archivo Terraform.")
                   return
+              
               for resource in terraform_data["resource"]:
                   for resource_type, instances in resource.items():
-                      if resource_type not in resource_classes:
-                          print(f"Tipo de recurso no soportado: {resource_type}")
-                          continue
-                      for instance_name, resource_details in instances.items():
-                          print(f"Creando recurso: {instance_name}")
-                          create_or_get_resource(resource_type, instance_name)
-          
-          # Generar el diagrama de infraestructura
-          def generate_diagram():
-              with Diagram("Infraestructura", show=False, outformat="png", filename="infra_diagram"):
-                  with Cluster("VPC"):
-                      for key, node in resources.items():
-                          if "aws_instance" in key:
-                              ec2_instance = node
-                              for other_key, other_node in resources.items():
-                                  if "aws_db_instance" in other_key:
-                                      ec2_instance >> other_node
-                                  elif "aws_security_group" in other_key:
-                                      other_node >> ec2_instance  # Relación SG -> EC2
+                      for instance_name, _ in instances.items():
+                          print(f"Recurso encontrado: {resource_type} - {instance_name}")
           
           if __name__ == "__main__":
-              terraform_dir = "infra"  # Directorio que contiene los archivos Terraform
-              process_terraform_files(terraform_dir)
-              generate_diagram()
-          ' > script.py
-          
-          python3 script.py
-
+              process_terraform_files()
+          ' > generate_diagram.py
+          python generate_diagram.py
 
       - name: Check if diagram was created
         run: |
